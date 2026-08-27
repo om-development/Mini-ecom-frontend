@@ -20,10 +20,10 @@ export default function Navbar() {
     try {
       setLoading(true);
       const res = await api.get(`/cart/${userId}`);
-      
+
       // Your API returns { message, cart } where cart has items array
       const cart = res.data.cart;
-      
+
       if (!cart || !cart.items) {
         setCartCount(0);
         setCartTotal(0);
@@ -31,19 +31,16 @@ export default function Navbar() {
       }
 
       const items = cart.items;
-      
+
       // Calculate total quantity
-      const totalQuantity = items.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-      
+      const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
       // Calculate total price
       const totalPrice = items.reduce(
-        (sum, item) => sum + (item.productId.price * item.quantity),
-        0
+        (sum, item) => sum + item.productId.price * item.quantity,
+        0,
       );
-      
+
       setCartCount(totalQuantity);
       setCartTotal(totalPrice);
     } catch (err) {
@@ -80,7 +77,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="font-bold text-2xl text-indigo-400 hover:text-indigo-300 transition">
+          <Link
+            to="/"
+            className="font-bold text-2xl text-indigo-400 hover:text-indigo-300 transition"
+          >
             Mohit Store
           </Link>
 
@@ -103,7 +103,7 @@ export default function Navbar() {
                   {cartCount}
                 </span>
               )}
-              
+
               {/* Hover Tooltip */}
               {cartCount > 0 && (
                 <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block bg-gray-800 text-white text-sm px-3 py-2 rounded border border-gray-600 whitespace-nowrap">
@@ -111,7 +111,13 @@ export default function Navbar() {
                 </div>
               )}
             </Link>
-
+            {/* {Order history} */}
+            <Link
+              to="/orders"
+              className="text-indigo-400 hover:text-indigo-300"
+            >
+              My Orders
+            </Link>
             {/* Auth Links */}
             <div className="flex gap-3 items-center">
               {!userId ? (

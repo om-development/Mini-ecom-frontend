@@ -12,6 +12,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import OrderSucess from "./pages/OrderSucess";
+import OrderHistory from "./pages/OrderHistory";
 
 function Layout() {
   return (
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: "/checkout-address", element: <CheckoutAddress /> },
       { path: "/checkout", element: <Checkout /> },
       { path: "/order-success/:orderId", element: <OrderSucess /> },
+      { path: "/orders", element: <OrderHistory /> },
     ],
   },
 ]);
