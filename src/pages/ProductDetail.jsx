@@ -24,6 +24,26 @@ export default function ProductDetail() {
     }
   };
 
+  // Add to cart function
+  const addToCart = async (productId) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Please login to add items to cart");
+        return;
+      }
+
+      const res = await api.post(`/cart/add`, { userId, productId });
+
+      // Dispatch event to trigger navbar update
+      window.dispatchEvent(new Event("cartUpdated"));
+      alert("Product added to cart!");
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("Failed to add product to cart");
+    }
+  };
+
   useEffect(() => {
     loadProduct();
   }, [id]);
@@ -178,6 +198,7 @@ export default function ProductDetail() {
 
             {/* Action Button */}
             <button
+              onClick={() => addToCart(product._id)}
               disabled={product.stock === 0}
               className={`${
                 product.stock > 0

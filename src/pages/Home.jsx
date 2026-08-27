@@ -48,6 +48,26 @@ const Home = () => {
     }
   };
 
+  // Add to cart function
+  const addToCart = async (productId) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Please login to add items to cart");
+        return;
+      }
+
+      const res = await api.post(`/cart/add`, { userId, productId });
+
+      // Dispatch event to trigger navbar update
+      window.dispatchEvent(new Event("cartUpdated"));
+      alert("Product added to cart!");
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("Failed to add product to cart");
+    }
+  };
+
   // Load categories on component mount
   useEffect(() => {
     loadCategories();
@@ -200,25 +220,33 @@ const Home = () => {
                   </span>
                 </div>
 
-                {/* Price and Button */}
-                <div className="flex items-center justify-between">
+                {/* Price and Buttons */}
+                <div className="flex items-center gap-2">
                   <span className="font-bold text-lg text-indigo-400">
                     ${product.price.toFixed(2)}
                   </span>
 
-                  <Link to={`/product/${product._id}`}>
+                  <div className="flex gap-2 ml-auto">
+                    {/* Add to Cart Button */}
                     <button
+                      onClick={() => addToCart(product._id)}
                       disabled={product.stock === 0}
                       className={`${
                         product.stock > 0
                           ? "bg-indigo-500 hover:bg-indigo-600"
                           : "bg-gray-600 cursor-not-allowed"
-                      } text-white font-bold py-2 px-4 rounded transition`}
+                      } text-white font-bold py-2 px-3 rounded transition text-sm`}
                     >
-                      {/* {product.stock > 0 ? "Add to cart" : "Out"} */}
-                      View
+                      {product.stock > 0 ? "Add" : "Out"}
                     </button>
-                  </Link>
+
+                    {/* View Details Link */}
+                    <Link to={`/product/${product._id}`}>
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded transition text-sm">
+                        View
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

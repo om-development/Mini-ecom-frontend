@@ -31,7 +31,8 @@ export default function Signup() {
       // Saving token to local storage (Temporary)
 
       localStorage.setItem("token", response.data.token);
-      localStorage.removeItem("user");
+      localStorage.removeItem("userId");
+      localStorage.setItem('userId',response.data.user.id)
       setTimeout(() => {
         navigate("/");
       }, 1000);
