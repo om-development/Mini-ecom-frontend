@@ -70,6 +70,7 @@ export default function Navbar() {
     await authLogout();
     setCartCount(0);
     setCartTotal(0);
+    navigate("/Login");
   };
 
   return (
