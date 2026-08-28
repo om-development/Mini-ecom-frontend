@@ -30,6 +30,7 @@ export default function CheckoutAddress() {
   const [previousAddresses, setPreviousAddresses] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [usedExisting, setUsedExisting] = useState(false);
 
   useEffect(() => {
     const loadPreviousAddresses = async () => {
@@ -54,6 +55,7 @@ export default function CheckoutAddress() {
         fullName: address.fullName, phone: address.phone, addressLine: address.addressLine,
         district: address.district, province: address.province, pincode: address.pincode,
       });
+      setUsedExisting(true);
       setShowModal(false);
     } catch {
       console.error("Error setting address");
@@ -79,8 +81,12 @@ export default function CheckoutAddress() {
 
     try {
       setLoading(true);
-      await api.post("/address/add", { ...form });
-      navigate("/checkout");
+      if (usedExisting) {
+        navigate("/checkout");
+      } else {
+        await api.post("/address/add", { ...form });
+        navigate("/checkout");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to save address");
     } finally {
@@ -131,7 +137,7 @@ export default function CheckoutAddress() {
             startIcon={loading ? <CircularProgress size={20} /> : null}
             sx={{ mt: 3 }}
           >
-            {loading ? "Saving..." : "Save & Continue"}
+            {loading ? "Saving..." : usedExisting ? "Continue" : "Save & Continue"}
           </Button>
         </Box>
       </Paper>
