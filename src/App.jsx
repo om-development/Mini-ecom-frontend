@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import CheckoutAddress from "./pages/CheckoutAddress";
-import OrderSucess from "./pages/OrderSucess";
+import OrderSuccess from "./pages/OrderSuccess";
 import OrderHistory from "./pages/OrderHistory";
 
 function Layout() {
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       { path: "/cart", element: <Cart /> },
       { path: "/checkout-address", element: <CheckoutAddress /> },
       { path: "/checkout", element: <Checkout /> },
-      { path: "/order-success/:orderId", element: <OrderSucess /> },
+      { path: "/order-success/:orderId", element: <OrderSuccess /> },
       { path: "/orders", element: <OrderHistory /> },
     ],
   },

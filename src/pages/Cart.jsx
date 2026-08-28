@@ -237,7 +237,7 @@ export default function Cart() {
               </div>
 
               <button
-                onClick={() => navigate("/Checkout-address")}
+                onClick={() => navigate("/checkout-address")}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition mb-3"
               >
                 Proceed to Checkout

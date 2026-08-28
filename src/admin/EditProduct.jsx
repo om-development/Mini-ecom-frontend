@@ -64,11 +64,11 @@ const EditProduct = () => {
         <div className="w-full max-w-xl">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-semibold text-gray-100">
-              Add Product
+              Edit Product
             </h1>
 
             <p className="mt-2 text-gray-400">
-              Add a new product to your store
+              Update product details
             </p>
           </div>
 
@@ -222,7 +222,7 @@ const EditProduct = () => {
                      focus:outline-none focus:ring-2 focus:ring-indigo-400
                      transition"
               >
-                Add Product
+                Update Product
               </button>
             </form>
           </div>

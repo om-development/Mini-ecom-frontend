@@ -152,7 +152,7 @@ export default function Checkout() {
             <div className="rounded-lg border border-gray-700 bg-[#111827] p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Delivery Address</h2>
-                <Link to="/checkout/address" className="text-indigo-400 hover:text-indigo-300 text-sm">
+                <Link to="/checkout-address" className="text-indigo-400 hover:text-indigo-300 text-sm">
                   Change
                 </Link>
               </div>
@@ -169,7 +169,7 @@ export default function Checkout() {
               ) : (
                 <div className="text-center py-6">
                   <p className="text-gray-400 mb-4">No address added</p>
-                  <Link to="/checkout/address">
+                  <Link to="/checkout-address">
                     <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition">
                       Add Address
                     </button>
