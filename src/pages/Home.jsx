@@ -6,19 +6,15 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Pagination from "@mui/material/Pagination";
 import Snackbar from "@mui/material/Snackbar";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -60,7 +56,9 @@ const Home = () => {
     }
   };
 
-  const addToCart = async (productId) => {
+  const addToCart = async (e, productId) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       setToast({ open: true, message: "Please login to add items to cart", severity: "warning" });
       return;
@@ -99,161 +97,257 @@ const Home = () => {
 
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
   const paginatedProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const featuredProducts = paginatedProducts.slice(0, 2);
+  const gridProducts = paginatedProducts.slice(2);
+
+  const ProductCardOverlay = ({ product, large = false }) => (
+    <Link
+      to={`/product/${product._id}`}
+      style={{ textDecoration: "none", display: "block" }}
+    >
+      <Box
+        sx={{
+          position: "relative",
+          borderRadius: "20px",
+          overflow: "hidden",
+          cursor: "pointer",
+          height: large ? { xs: 320, md: 420 } : { xs: 280, md: 320 },
+          group: "card",
+          "&:hover .card-overlay": { opacity: 1 },
+          "&:hover .card-img": { transform: "scale(1.05)" },
+          "&:hover .card-add-btn": { opacity: 1, transform: "translateY(0)" },
+        }}
+      >
+        <Box
+          className="card-img"
+          component="img"
+          src={product.image}
+          alt={product.title}
+          sx={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          }}
+        />
+
+        <Box
+          className="card-overlay"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            p: large ? { xs: 3, md: 4 } : { xs: 2.5, md: 3 },
+          }}
+        >
+          <Box>
+            <Typography
+              sx={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "0.7rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                mb: 0.5,
+              }}
+            >
+              {product.category}
+            </Typography>
+            <Typography
+              sx={{
+                color: "#fff",
+                fontWeight: 500,
+                fontSize: large ? { xs: "1.25rem", md: "1.5rem" } : "1rem",
+                letterSpacing: "-0.01em",
+                mb: 0.5,
+                lineHeight: 1.3,
+              }}
+            >
+              {product.title}
+            </Typography>
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <Typography
+                sx={{
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: large ? "1.25rem" : "1rem",
+                }}
+              >
+                ${product.price.toFixed(2)}
+              </Typography>
+              <Box
+                className="card-add-btn"
+                onClick={(e) => addToCart(e, product._id)}
+                sx={{
+                  opacity: 0,
+                  transform: "translateY(8px)",
+                  transition: "all 0.25s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  backgroundColor: "#fff",
+                  color: "#000",
+                  borderRadius: 980,
+                  px: 2,
+                  py: 0.75,
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  "&:hover": { backgroundColor: "#f0f0f0" },
+                }}
+              >
+                <AddShoppingCartIcon sx={{ fontSize: 16 }} />
+                Add
+              </Box>
+            </Box>
+            {product.stock === 0 && (
+              <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", mt: 0.5 }}>
+                Out of stock
+              </Typography>
+            )}
+            {product.stock > 0 && product.stock < 5 && (
+              <Typography sx={{ color: "rgba(255,200,0,0.8)", fontSize: "0.75rem", mt: 0.5 }}>
+                Only {product.stock} left
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    </Link>
+  );
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h3" sx={{ mb: 1 }}>
-          Discover
-        </Typography>
-        <Typography variant="body1" sx={{ color: "text.secondary", maxWidth: 480 }}>
-          Browse our collection of products curated just for you.
-        </Typography>
-      </Box>
-
-      <TextField
-        fullWidth
-        placeholder="Search products..."
-        value={search}
-        onChange={handleSearch}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon sx={{ color: "text.secondary", fontSize: 20 }} />
-              </InputAdornment>
-            ),
-          },
-        }}
-        sx={{ mb: 3, maxWidth: 480 }}
-      />
-
-      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 4 }}>
-        <Chip
-          label="All"
-          clickable
-          color={category === "All Categories" || !category ? "primary" : "default"}
-          onClick={() => handleCategory("All Categories")}
-          variant={category === "All Categories" || !category ? "filled" : "outlined"}
-        />
-        {categories.map((cat) => (
-          <Chip
-            key={cat}
-            label={cat}
-            clickable
-            color={category === cat ? "primary" : "default"}
-            onClick={() => handleCategory(cat)}
-            variant={category === cat ? "filled" : "outlined"}
-          />
-        ))}
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
-      )}
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" py={12}>
-          <CircularProgress size={24} />
-        </Box>
-      ) : paginatedProducts.length === 0 ? (
-        <Box textAlign="center" py={12}>
-          <Typography variant="h5" sx={{ color: "text.secondary", fontWeight: 400 }}>
-            No products found
+    <Box sx={{ minHeight: "100vh" }}>
+      {/* Hero Section */}
+      <Box sx={{ px: { xs: 3, md: 6 }, pt: { xs: 4, md: 6 }, pb: 2 }}>
+        <Container maxWidth="lg" disableGutters>
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 600,
+              letterSpacing: "-0.03em",
+              fontSize: { xs: "2rem", md: "2.75rem" },
+              mb: 1,
+            }}
+          >
+            Store
           </Typography>
-        </Box>
-      ) : (
-        <>
-          <Grid container spacing={2.5}>
-            {paginatedProducts.map((product) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
-                <Card
+          <Typography
+            sx={{
+              color: "text.secondary",
+              fontSize: { xs: "0.9375rem", md: "1.0625rem" },
+              maxWidth: 400,
+              mb: 4,
+            }}
+          >
+            Everything you need, curated for you.
+          </Typography>
+
+          {/* Search + Filters */}
+          <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap", alignItems: "center" }}>
+            <TextField
+              placeholder="Search..."
+              value={search}
+              onChange={handleSearch}
+              size="small"
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "text.secondary", fontSize: 18 }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ flex: 1, maxWidth: 320 }}
+            />
+            <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+              <Chip
+                label="All"
+                clickable
+                size="small"
+                color={category === "All Categories" || !category ? "primary" : "default"}
+                onClick={() => handleCategory("All Categories")}
+                variant={category === "All Categories" || !category ? "filled" : "outlined"}
+              />
+              {categories.map((cat) => (
+                <Chip
+                  key={cat}
+                  label={cat}
+                  clickable
+                  size="small"
+                  color={category === cat ? "primary" : "default"}
+                  onClick={() => handleCategory(cat)}
+                  variant={category === cat ? "filled" : "outlined"}
+                />
+              ))}
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Content */}
+      <Box sx={{ px: { xs: 3, md: 6 }, pb: 8 }}>
+        <Container maxWidth="lg" disableGutters>
+          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+
+          {loading ? (
+            <Box display="flex" justifyContent="center" py={12}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : paginatedProducts.length === 0 ? (
+            <Box textAlign="center" py={12}>
+              <Typography sx={{ color: "text.secondary", fontSize: "1.125rem" }}>
+                No products found
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              {/* Featured: First 2 products as large hero cards */}
+              {featuredProducts.length > 0 && (
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
+                  {featuredProducts.map((product) => (
+                    <ProductCardOverlay key={product._id} product={product} large />
+                  ))}
+                </Box>
+              )}
+
+              {/* Grid: Remaining products */}
+              {gridProducts.length > 0 && (
+                <Box
                   sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    cursor: "pointer",
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "repeat(2, 1fr)",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                    },
+                    gap: 2,
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    height="220"
-                    image={product.image}
-                    alt={product.title}
-                    sx={{
-                      objectFit: "cover",
-                      borderRadius: "16px 16px 0 0",
-                    }}
-                  />
-                  <CardContent sx={{ flexGrow: 1, p: 2.5, pb: 1 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontWeight: 500,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        mb: 0.25,
-                      }}
-                    >
-                      {product.title}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1.5 }}>
-                      {product.category}
-                    </Typography>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        ${product.price.toFixed(2)}
-                      </Typography>
-                      {product.stock < 5 && product.stock > 0 && (
-                        <Typography variant="body2" sx={{ color: "warning.main", fontSize: "0.75rem" }}>
-                          Only {product.stock} left
-                        </Typography>
-                      )}
-                      {product.stock === 0 && (
-                        <Typography variant="body2" sx={{ color: "error.main", fontSize: "0.75rem" }}>
-                          Out of stock
-                        </Typography>
-                      )}
-                    </Box>
-                  </CardContent>
-                  <CardActions sx={{ p: 2.5, pt: 1.5, gap: 1 }}>
-                    <Button
-                      size="small"
-                      component={Link}
-                      to={`/product/${product._id}`}
-                      sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      disabled={product.stock === 0}
-                      onClick={() => addToCart(product._id)}
-                      sx={{ fontSize: "0.8125rem" }}
-                    >
-                      Add to Cart
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  {gridProducts.map((product) => (
+                    <ProductCardOverlay key={product._id} product={product} />
+                  ))}
+                </Box>
+              )}
 
-          {totalPages > 1 && (
-            <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(_, val) => setPage(val)}
-                color="primary"
-                size="small"
-              />
-            </Box>
+              {totalPages > 1 && (
+                <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(_, val) => setPage(val)}
+                    color="primary"
+                    size="small"
+                  />
+                </Box>
+              )}
+            </>
           )}
-        </>
-      )}
+        </Container>
+      </Box>
 
       <Snackbar
         open={toast.open}
@@ -269,7 +363,7 @@ const Home = () => {
           {toast.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 

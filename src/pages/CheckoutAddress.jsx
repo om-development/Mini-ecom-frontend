@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -86,8 +85,13 @@ export default function CheckoutAddress() {
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-      <Typography variant="h3" sx={{ mb: 1 }}>Delivery Address</Typography>
-      <Typography variant="body1" sx={{ color: "text.secondary", mb: 4 }}>
+      <Typography
+        variant="h2"
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 0.5 }}
+      >
+        Delivery Address
+      </Typography>
+      <Typography sx={{ color: "text.secondary", mb: 4 }}>
         Where should we deliver?
       </Typography>
 
@@ -99,48 +103,67 @@ export default function CheckoutAddress() {
         </Button>
       )}
 
-      <Paper sx={{ p: { xs: 3, md: 4 } }}>
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2.5}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField fullWidth label="Full Name" name="fullName" value={form.fullName} onChange={handleChange} required />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField fullWidth label="Phone" name="phone" value={form.phone} onChange={handleChange} required inputProps={{ maxLength: 10 }} />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <TextField fullWidth label="Address Line" name="addressLine" value={form.addressLine} onChange={handleChange} required />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="District" name="district" value={form.district} onChange={handleChange} required />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="Province" name="province" value={form.province} onChange={handleChange} required />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} required inputProps={{ maxLength: 6 }} />
-            </Grid>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          p: { xs: 3, md: 4 },
+          borderRadius: "16px",
+          backgroundColor: "rgba(255,255,255,0.02)",
+          border: "0.5px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <Grid container spacing={2.5}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField fullWidth label="Full Name" name="fullName" value={form.fullName} onChange={handleChange} required />
           </Grid>
-          <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            size="large"
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{ mt: 4 }}
-          >
-            {loading ? "Saving..." : usedExisting ? "Continue" : "Save & Continue"}
-          </Button>
-        </Box>
-      </Paper>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField fullWidth label="Phone" name="phone" value={form.phone} onChange={handleChange} required inputProps={{ maxLength: 10 }} />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <TextField fullWidth label="Address Line" name="addressLine" value={form.addressLine} onChange={handleChange} required />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField fullWidth label="District" name="district" value={form.district} onChange={handleChange} required />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField fullWidth label="Province" name="province" value={form.province} onChange={handleChange} required />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <TextField fullWidth label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} required inputProps={{ maxLength: 6 }} />
+          </Grid>
+        </Grid>
+        <Button
+          fullWidth
+          variant="contained"
+          type="submit"
+          size="large"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
+          sx={{ mt: 4 }}
+        >
+          {loading ? "Saving..." : usedExisting ? "Continue" : "Save & Continue"}
+        </Button>
+      </Box>
 
       <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Select a Previous Address</DialogTitle>
         <DialogContent>
           <RadioGroup value={selectedAddressId} onChange={(e) => setSelectedAddressId(e.target.value)}>
             {previousAddresses.map((addr) => (
-              <Paper key={addr._id} sx={{ p: 2, mb: 1, cursor: "pointer" }} onClick={() => setSelectedAddressId(addr._id)}>
+              <Box
+                key={addr._id}
+                onClick={() => setSelectedAddressId(addr._id)}
+                sx={{
+                  p: 2,
+                  mb: 1,
+                  borderRadius: "12px",
+                  cursor: "pointer",
+                  border: selectedAddressId === addr._id ? "1px solid rgba(0,113,227,0.4)" : "0.5px solid rgba(255,255,255,0.06)",
+                  backgroundColor: selectedAddressId === addr._id ? "rgba(0,113,227,0.06)" : "transparent",
+                  transition: "all 0.15s",
+                }}
+              >
                 <FormControlLabel
                   value={addr._id}
                   control={<Radio size="small" />}
@@ -152,7 +175,7 @@ export default function CheckoutAddress() {
                     </Box>
                   }
                 />
-              </Paper>
+              </Box>
             ))}
           </RadioGroup>
         </DialogContent>

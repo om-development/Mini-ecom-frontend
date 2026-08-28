@@ -5,14 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 
@@ -106,102 +103,163 @@ export default function Checkout() {
       >
         &larr; Back to Cart
       </Button>
-      <Typography variant="h3" sx={{ mb: 4 }}>Checkout</Typography>
+      <Typography
+        variant="h2"
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 4 }}
+      >
+        Checkout
+      </Typography>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper sx={{ p: { xs: 3, md: 4 }, mb: 2.5 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 380px" }, gap: 3, alignItems: "start" }}>
+        <Box>
+          {/* Address Section */}
+          <Box sx={{ mb: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-              <Typography variant="h6">Delivery Address</Typography>
-              <Button size="small" onClick={() => navigate("/checkout-address")} sx={{ color: "#0071e3" }}>
+              <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                Delivery Address
+              </Typography>
+              <Button size="small" onClick={() => navigate("/checkout-address")} sx={{ color: "#0071e3", fontSize: "0.8125rem" }}>
                 {address ? "Change" : "Add"}
               </Button>
             </Box>
             {address ? (
-              <Box>
+              <Box
+                sx={{
+                  p: 2.5,
+                  borderRadius: "12px",
+                  backgroundColor: "rgba(255,255,255,0.02)",
+                  border: "0.5px solid rgba(255,255,255,0.06)",
+                }}
+              >
                 <Typography sx={{ fontWeight: 500, mb: 0.25 }}>{address.fullName}</Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>{address.addressLine}</Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>{address.district}, {address.province} {address.pincode}</Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {address.district}, {address.province} {address.pincode}
+                </Typography>
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>Phone: {address.phone}</Typography>
               </Box>
             ) : (
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                No address saved yet
-              </Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>No address saved yet</Typography>
             )}
-          </Paper>
+          </Box>
 
-          <Paper sx={{ p: { xs: 3, md: 4 }, mb: 2.5 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Items</Typography>
-            {cart.items.map((item) => (
-              <Box key={item.productId._id} display="flex" gap={2} sx={{ py: 1.5 }}>
+          {/* Items Section */}
+          <Box sx={{ mb: 4 }}>
+            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
+              Items
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+              {cart.items.map((item) => (
                 <Box
-                  component="img"
-                  src={item.productId.image}
-                  alt={item.productId.title}
-                  sx={{ width: 52, height: 52, objectFit: "cover", borderRadius: 1.5, flexShrink: 0 }}
-                />
-                <Box flex={1}>
-                  <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>{item.productId.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {item.quantity} x ${item.productId.price.toFixed(2)}
-                  </Typography>
+                  key={item.productId._id}
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    p: 2,
+                    borderRadius: "12px",
+                    backgroundColor: "rgba(255,255,255,0.02)",
+                    border: "0.5px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={item.productId.image}
+                    alt={item.productId.title}
+                    sx={{ width: 56, height: 56, objectFit: "cover", borderRadius: "10px", flexShrink: 0 }}
+                  />
+                  <Box flex={1} display="flex" justifyContent="space-between" alignItems="center">
+                    <Box>
+                      <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>{item.productId.title}</Typography>
+                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                        {item.quantity} x ${item.productId.price.toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>
+                      ${(item.quantity * item.productId.price).toFixed(2)}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>
-                  ${(item.quantity * item.productId.price).toFixed(2)}
-                </Typography>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Payment Section */}
+          <Box>
+            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
+              Payment Method
+            </Typography>
+            <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                {[
+                  { value: "card", label: "Credit / Debit Card" },
+                  { value: "upi", label: "UPI" },
+                  { value: "netbanking", label: "Net Banking" },
+                  { value: "cod", label: "Cash on Delivery" },
+                ].map((option) => (
+                  <FormControlLabel
+                    key={option.value}
+                    value={option.value}
+                    control={<Radio size="small" />}
+                    label={option.label}
+                    sx={{
+                      m: 0,
+                      py: 1,
+                      px: 2,
+                      borderRadius: "10px",
+                      border: paymentMethod === option.value ? "1px solid rgba(0,113,227,0.4)" : "0.5px solid rgba(255,255,255,0.06)",
+                      backgroundColor: paymentMethod === option.value ? "rgba(0,113,227,0.06)" : "transparent",
+                      transition: "all 0.15s",
+                    }}
+                  />
+                ))}
               </Box>
-            ))}
-          </Paper>
+            </RadioGroup>
+          </Box>
+        </Box>
 
-          <Paper sx={{ p: { xs: 3, md: 4 } }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Payment</Typography>
-            <FormControl component="fieldset">
-              <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-                <FormControlLabel value="card" control={<Radio size="small" />} label="Credit / Debit Card" />
-                <FormControlLabel value="upi" control={<Radio size="small" />} label="UPI" />
-                <FormControlLabel value="netbanking" control={<Radio size="small" />} label="Net Banking" />
-                <FormControlLabel value="cod" control={<Radio size="small" />} label="Cash on Delivery" />
-              </RadioGroup>
-            </FormControl>
-          </Paper>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper sx={{ p: { xs: 3, md: 4 }, position: "sticky", top: 72 }}>
-            <Typography variant="h6" sx={{ mb: 2.5 }}>Summary</Typography>
-            <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>Subtotal</Typography>
-              <Typography variant="body2">${subtotal.toFixed(2)}</Typography>
-            </Box>
-            <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>Tax (10%)</Typography>
-              <Typography variant="body2">${tax.toFixed(2)}</Typography>
-            </Box>
-            <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
-              <Typography variant="body2" sx={{ color: "success.main" }}>Free</Typography>
-            </Box>
-            <Divider sx={{ my: 2 }} />
-            <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-              <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>${total.toFixed(2)}</Typography>
-            </Box>
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              onClick={handlePlaceOrder}
-              disabled={loading || !address}
-              startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
-            >
-              {loading ? "Placing order..." : "Place Order"}
-            </Button>
-          </Paper>
-        </Grid>
-      </Grid>
+        {/* Summary */}
+        <Box
+          sx={{
+            p: 3,
+            borderRadius: "16px",
+            backgroundColor: "rgba(255,255,255,0.02)",
+            border: "0.5px solid rgba(255,255,255,0.06)",
+            position: "sticky",
+            top: 72,
+          }}
+        >
+          <Typography sx={{ fontWeight: 500, fontSize: "1.0625rem", mb: 2.5 }}>Summary</Typography>
+          <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Subtotal</Typography>
+            <Typography variant="body2">${subtotal.toFixed(2)}</Typography>
+          </Box>
+          <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Tax (10%)</Typography>
+            <Typography variant="body2">${tax.toFixed(2)}</Typography>
+          </Box>
+          <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
+            <Typography variant="body2" sx={{ color: "success.main" }}>Free</Typography>
+          </Box>
+          <Box sx={{ my: 2, height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
+          <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
+            <Typography sx={{ fontWeight: 500 }}>Total</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>${total.toFixed(2)}</Typography>
+          </Box>
+          <Button
+            fullWidth
+            variant="contained"
+            size="large"
+            onClick={handlePlaceOrder}
+            disabled={loading || !address}
+            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
+          >
+            {loading ? "Placing order..." : "Place Order"}
+          </Button>
+        </Box>
+      </Box>
     </Container>
   );
 }

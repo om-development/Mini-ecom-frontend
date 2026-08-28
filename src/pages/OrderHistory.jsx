@@ -5,12 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
@@ -19,6 +14,14 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+
+const statusColors = {
+  Placed: "#ff9f0a",
+  Processing: "#5ac8fa",
+  Shipped: "#0071e3",
+  Delivered: "#34c759",
+  Cancelled: "#ff3b30",
+};
 
 export default function OrderHistory() {
   const { user } = useAuth();
@@ -65,41 +68,74 @@ export default function OrderHistory() {
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-      <Typography variant="h3" sx={{ mb: 4 }}>
+      <Typography
+        variant="h2"
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 4 }}
+      >
         {isAdmin ? "All Orders" : "Orders"}
       </Typography>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {orders.length === 0 ? (
-        <Paper sx={{ p: { xs: 4, md: 8 }, textAlign: "center" }}>
-          <ShoppingBagOutlinedIcon sx={{ fontSize: 56, color: "text.disabled", mb: 2 }} />
-          <Typography variant="h5" sx={{ color: "text.secondary", mb: 3, fontWeight: 400 }}>
+        <Box textAlign="center" py={12}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
+          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 3 }}>
             No orders yet
           </Typography>
-          <Button variant="contained" component={Link} to="/">
-            Start Shopping
-          </Button>
-        </Paper>
+          <Button variant="contained" component={Link} to="/">Start Shopping</Button>
+        </Box>
       ) : (
-        <Box display="flex" flexDirection="column" gap={2}>
-          {orders.map((order) => (
-            <Card
-              key={order._id}
-              component={Link}
-              to={`/order-success/${order._id}`}
-              sx={{ textDecoration: "none", "&:hover": { opacity: 0.85 } }}
-            >
-              <CardContent sx={{ p: { xs: 2.5, md: 3 }, "&:last-child": { pb: { xs: 2.5, md: 3 } } }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Box>
-                    <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.25 }}>
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </Typography>
-                    <Typography sx={{ fontWeight: 500 }}>
+        <Box>
+          {orders.map((order, index) => (
+            <Box key={order._id}>
+              {index > 0 && (
+                <Box sx={{ height: 1, backgroundColor: "rgba(255,255,255,0.06)", mx: 0 }} />
+              )}
+              <Box
+                component={Link}
+                to={`/order-success/${order._id}`}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  py: 2.5,
+                  textDecoration: "none",
+                  transition: "background-color 0.15s",
+                  "&:hover": { backgroundColor: "rgba(255,255,255,0.02)" },
+                  mx: -2,
+                  px: 2,
+                  borderRadius: "12px",
+                }}
+              >
+                {/* Status Dot */}
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: statusColors[order.status] || "#666",
+                    flexShrink: 0,
+                  }}
+                />
+
+                {/* Order Info */}
+                <Box flex={1} minWidth={0}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem" }}>
                       {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
                     </Typography>
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      · {new Date(order.createdAt).toLocaleDateString()}
+                    </Typography>
                   </Box>
+                  <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.25 }}>
+                    {order.paymentMethod?.toUpperCase()}
+                  </Typography>
+                </Box>
+
+                {/* Right side */}
+                <Box display="flex" alignItems="center" gap={2} flexShrink={0}>
                   {isAdmin ? (
                     <FormControl size="small" sx={{ minWidth: 130 }} onClick={(e) => e.preventDefault()}>
                       <InputLabel>Status</InputLabel>
@@ -119,28 +155,16 @@ export default function OrderHistory() {
                       </Select>
                     </FormControl>
                   ) : (
-                    <Chip
-                      label={order.status}
-                      size="small"
-                      color={
-                        order.status === "Delivered" ? "success" :
-                        order.status === "Shipped" ? "info" :
-                        order.status === "Cancelled" ? "error" : "warning"
-                      }
-                    />
+                    <Typography variant="body2" sx={{ color: statusColors[order.status] || "text.secondary" }}>
+                      {order.status}
+                    </Typography>
                   )}
-                </Box>
-                <Divider sx={{ my: 1.5 }} />
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {order.paymentMethod?.toUpperCase()}
-                  </Typography>
-                  <Typography sx={{ fontWeight: 600 }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: "0.9375rem" }}>
                     ${order.totalAmount?.toFixed(2)}
                   </Typography>
                 </Box>
-              </CardContent>
-            </Card>
+              </Box>
+            </Box>
           ))}
         </Box>
       )}

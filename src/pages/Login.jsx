@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -42,12 +41,29 @@ export default function Login() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: { xs: 8, md: 12 } }}>
-      <Paper sx={{ p: { xs: 4, md: 6 }, textAlign: "center" }}>
-        <Typography variant="h3" sx={{ mb: 1 }}>
+    <Box
+      sx={{
+        minHeight: "80vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 3,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 400 }}>
+        <Typography
+          variant="h2"
+          sx={{
+            fontWeight: 600,
+            letterSpacing: "-0.03em",
+            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            mb: 1,
+            textAlign: "center",
+          }}
+        >
           Welcome back
         </Typography>
-        <Typography variant="body1" sx={{ color: "text.secondary", mb: 5 }}>
+        <Typography sx={{ color: "text.secondary", mb: 5, textAlign: "center" }}>
           Sign in to your account
         </Typography>
 
@@ -90,13 +106,13 @@ export default function Login() {
           </Button>
         </Box>
 
-        <Typography variant="body2" sx={{ mt: 4, color: "text.secondary" }}>
+        <Typography variant="body2" sx={{ mt: 4, textAlign: "center", color: "text.secondary" }}>
           Don't have an account?{" "}
           <Link to="/SignUp" style={{ color: "#0071e3", fontWeight: 500 }}>
             Create one
           </Link>
         </Typography>
-      </Paper>
-    </Container>
+      </Box>
+    </Box>
   );
 }
