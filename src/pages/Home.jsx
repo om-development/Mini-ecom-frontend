@@ -533,7 +533,7 @@ const Home = () => {
             <Box display="flex" justifyContent="center" py={12}>
               <CircularProgress size={24} />
             </Box>
-          ) : paginatedProducts.length === 0 ? (
+          ) : products.length === 0 ? (
             <Box textAlign="center" py={14}>
               <Inventory2OutlinedIcon sx={{ fontSize: 80, color: "#48484a", mb: 3 }} />
               <Typography sx={{ color: "#6e6e73", fontSize: "1.125rem", mb: 1 }}>
