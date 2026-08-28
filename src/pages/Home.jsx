@@ -10,7 +10,6 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import Pagination from "@mui/material/Pagination";
 import Snackbar from "@mui/material/Snackbar";
 import InputAdornment from "@mui/material/InputAdornment";
 import Stack from "@mui/material/Stack";
@@ -21,8 +20,8 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import PagePagination from "../components/PagePagination";
 
-const ITEMS_PER_PAGE = 8;
 const MAX_VISIBLE_CATEGORIES = 3;
 
 const Home = () => {
@@ -32,6 +31,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
   const [imgErrors, setImgErrors] = useState({});
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -44,11 +44,12 @@ const Home = () => {
     try {
       setLoading(true);
       setError(null);
-      const params = {};
+      const params = { page, limit: 15 };
       if (search) params.search = search;
       if (category && category !== "All Categories") params.category = category;
       const res = await api.get("/products", { params });
       setProducts(res.data.products || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch {
       setError("Failed to load products");
     } finally {
@@ -86,7 +87,8 @@ const Home = () => {
   };
 
   useEffect(() => { loadCategories(); }, []);
-  useEffect(() => { loadProducts(); setPage(1); }, [search, category]);
+  useEffect(() => { setPage(1); }, [search, category]);
+  useEffect(() => { loadProducts(); }, [page, search, category]);
 
   const handleSearch = useCallback(
     (e) => {
@@ -108,10 +110,8 @@ const Home = () => {
     });
   };
 
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
-  const paginatedProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-  const featuredProducts = paginatedProducts.slice(0, 2);
-  const gridProducts = paginatedProducts.slice(2);
+  const featuredProducts = products.slice(0, 2);
+  const gridProducts = products.slice(2);
 
   const visibleCategories = showAllCategories
     ? categories
@@ -575,13 +575,7 @@ const Home = () => {
 
               {totalPages > 1 && (
                 <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
-                  <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(_, val) => setPage(val)}
-                    color="primary"
-                    size="small"
-                  />
+                  <PagePagination page={page} totalPages={totalPages} onChange={setPage} />
                 </Box>
               )}
             </>

@@ -11,7 +11,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Box from "@mui/material/Box";
-import Pagination from "@mui/material/Pagination";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
@@ -20,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import PagePagination from "../components/PagePagination";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -163,7 +163,7 @@ export default function ProductList() {
 
         {totalPages > 1 && (
           <Box display="flex" justifyContent="center" sx={{ py: 3 }}>
-            <Pagination count={totalPages} page={page} onChange={(_, val) => setPage(val)} color="primary" size="small" />
+            <PagePagination page={page} totalPages={totalPages} onChange={setPage} />
           </Box>
         )}
       </Box>

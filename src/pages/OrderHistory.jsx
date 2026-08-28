@@ -15,6 +15,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import PagePagination from "../components/PagePagination";
 
 const statusConfig = {
   Placed: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
@@ -30,6 +31,8 @@ export default function OrderHistory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const isAdmin = user?.role === "admin";
   const statuses = ["Placed", "Processing", "Shipped", "Delivered", "Cancelled"];
 
@@ -38,8 +41,9 @@ export default function OrderHistory() {
       setLoading(true);
       setError(null);
       const url = isAdmin ? "/order/all" : "/order/user/me";
-      const res = await api.get(url);
+      const res = await api.get(url, { params: { page, limit: 10 } });
       setOrders(res.data.orders || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch {
       setError("Failed to load orders");
     } finally {
@@ -47,7 +51,7 @@ export default function OrderHistory() {
     }
   };
 
-  useEffect(() => { loadOrders(); }, [isAdmin]);
+  useEffect(() => { loadOrders(); }, [isAdmin, page]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
@@ -199,6 +203,12 @@ export default function OrderHistory() {
               </Box>
             );
           })}
+        </Box>
+      )}
+
+      {totalPages > 1 && (
+        <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+          <PagePagination page={page} totalPages={totalPages} onChange={setPage} />
         </Box>
       )}
 
