@@ -29,8 +29,8 @@ export default function Login() {
       setMsg("User logged in Successfully");
       console.log("SUCCESS:", response.data);
 
-      // Use AuthContext login
-      login(response.data.user, response.data.token);
+      // Use AuthContext login (token is in httpOnly cookie, only user data needed)
+      login(response.data.user);
       setTimeout(() => {
         navigate("/");
       }, 1000);

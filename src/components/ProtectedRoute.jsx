@@ -34,9 +34,9 @@ export function AdminRoute() {
     return <Navigate to="/Login" replace />;
   }
 
-  // For now, we check if user exists - we'd ideally check user.role === "admin"
-  // But the frontend doesn't have role info yet, so we'll rely on backend protection
-  // and just allow access if authenticated (backend will reject if not admin)
+  if (user?.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
 
   return <Outlet />;
 }

@@ -9,20 +9,20 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
-      if (token && userId) {
-        setUser({ id: userId });
+      const role = localStorage.getItem("role");
+      if (userId) {
+        setUser({ id: userId, role });
       }
       setLoading(false);
     };
     initAuth();
   }, []);
 
-  const login = (userData, token) => {
-    localStorage.setItem("token", token);
+  const login = (userData) => {
     localStorage.setItem("userId", userData.id);
-    setUser({ id: userData.id, name: userData.name, email: userData.email });
+    localStorage.setItem("role", userData.role);
+    setUser({ id: userData.id, name: userData.name, email: userData.email, role: userData.role });
   };
 
   const logout = async () => {
@@ -31,8 +31,8 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.error("Logout error:", err);
     }
-    localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("role");
     setUser(null);
   };
 
