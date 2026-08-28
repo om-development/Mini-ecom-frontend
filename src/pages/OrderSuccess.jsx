@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import api from "../api/axios";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import Divider from "@mui/material/Divider";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function OrderSuccess() {
   const { orderId } = useParams();
@@ -12,187 +21,98 @@ export default function OrderSuccess() {
     const loadOrder = async () => {
       try {
         setLoading(true);
-        setError(null);
         const res = await api.get(`/order/${orderId}`);
         setOrder(res.data.order);
-      } catch (err) {
-        console.error("Error loading order:", err);
+      } catch {
         setError("Failed to load order details");
       } finally {
         setLoading(false);
       }
     };
-
-    if (orderId) {
-      loadOrder();
-    }
+    loadOrder();
   }, [orderId]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f172a] flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-        <div className="max-w-2xl mx-auto">
-          <div className="rounded-md bg-red-500/10 px-4 py-3 text-red-400 border border-red-500/20 mb-4">
-            {error}
-          </div>
-          <Link to="/" className="text-indigo-400 hover:text-indigo-300">
-            ← Back to Home
-          </Link>
-        </div>
-      </div>
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
     );
   }
 
-  if (!order) {
-    return (
-      <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gray-400">Order not found</p>
-          <Link
-            to="/"
-            className="text-indigo-400 hover:text-indigo-300 mt-4 inline-block"
-          >
-            ← Back to Home
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!order) return null;
 
   return (
-    <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-      <div className="max-w-2xl mx-auto">
-        {/* Success Message */}
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">✅</div>
-          <h1 className="text-4xl font-bold mb-2">
-            Order Placed Successfully!
-          </h1>
-          <p className="text-gray-400">Thank you for your purchase</p>
-        </div>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Box textAlign="center" sx={{ mb: 4 }}>
+        <CheckCircleIcon color="success" sx={{ fontSize: 64 }} />
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Order Placed Successfully!
+        </Typography>
+        <Typography color="text.secondary">
+          Order ID: {order._id}
+        </Typography>
+      </Box>
 
-        {/* Order Details */}
-        <div className="rounded-lg border border-gray-700 bg-[#111827] p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4">Order Details</h2>
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>Order Details</Typography>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography color="text.secondary">Status</Typography>
+          <Alert severity={order.status === "Delivered" ? "success" : order.status === "Shipped" ? "info" : "warning"} sx={{ py: 0 }}>
+            {order.status}
+          </Alert>
+        </Box>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography color="text.secondary">Payment</Typography>
+          <Typography>{order.paymentMethod?.toUpperCase()}</Typography>
+        </Box>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography color="text.secondary">Date</Typography>
+          <Typography>{new Date(order.createdAt).toLocaleDateString()}</Typography>
+        </Box>
 
-          <div className="space-y-3 text-gray-300">
-            <div className="flex justify-between">
-              <span>Order ID:</span>
-              <span className="font-mono text-indigo-400">{order._id}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Status:</span>
-              <span className="uppercase text-yellow-400 font-bold">
-                {order.status}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>Payment Method:</span>
-              <span className="uppercase">{order.paymentMethod}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Order Date:</span>
-              <span>{new Date(order.createdAt).toLocaleDateString()}</span>
-            </div>
-          </div>
-        </div>
+        <Divider sx={{ my: 2 }} />
 
-        {/* Order Items */}
-        <div className="rounded-lg border border-gray-700 bg-[#111827] p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4">Items Ordered</h2>
+        <Typography variant="h6" gutterBottom>Items</Typography>
+        {order.items?.map((item, i) => (
+          <Box key={i} display="flex" justifyContent="space-between" sx={{ py: 0.5 }}>
+            <Typography variant="body2">
+              {item.title || "Product"} x {item.quantity}
+            </Typography>
+            <Typography variant="body2">${(item.price * item.quantity).toFixed(2)}</Typography>
+          </Box>
+        ))}
 
-          <div className="space-y-3">
-            {order.items &&
-              Array.isArray(order.items) &&
-              order.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="border-b border-gray-700 pb-3 last:border-0 flex justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-gray-100">
-                      {item?.title || "Unknown Item"}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Qty: {item?.quantity || 0} × $
-                      {(item?.price || 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <p className="font-bold text-indigo-400">
-                    ${((item?.quantity || 0) * (item?.price || 0)).toFixed(2)}
-                  </p>
-                </div>
-              ))}
-          </div>
-        </div>
+        <Divider sx={{ my: 2 }} />
 
-        {/* Delivery Address */}
-        {order.address && (
-          <div className="rounded-lg border border-gray-700 bg-[#111827] p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">Delivery Address</h2>
+        <Box display="flex" justifyContent="space-between">
+          <Typography variant="h6" color="primary">Total</Typography>
+          <Typography variant="h6" color="primary">${order.totalAmount?.toFixed(2)}</Typography>
+        </Box>
+      </Paper>
 
-            <div className="space-y-2 text-gray-300">
-              <p className="font-medium text-gray-100">
-                {order.address.fullName}
-              </p>
-              <p>{order.address.addressLine}</p>
-              <p>
-                {order.address.district}, {order.address.province}{" "}
-                {order.address.pincode}
-              </p>
-              <p>📞 {order.address.phone}</p>
-            </div>
-          </div>
-        )}
+      {order.address && (
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h6" gutterBottom>Delivery Address</Typography>
+          <Typography>{order.address.fullName}</Typography>
+          <Typography variant="body2" color="text.secondary">{order.address.addressLine}</Typography>
+          <Typography variant="body2" color="text.secondary">{order.address.district}, {order.address.province} {order.address.pincode}</Typography>
+          <Typography variant="body2" color="text.secondary">Phone: {order.address.phone}</Typography>
+        </Paper>
+      )}
 
-        {/* Price Summary */}
-        <div className="rounded-lg border border-gray-700 bg-[#111827] p-6 mb-6">
-          <div className="space-y-3">
-            <div className="flex justify-between text-gray-300">
-              <span>Subtotal</span>
-              <span>${(order.subtotal || 0).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-300">
-              <span>Tax (10%)</span>
-              <span>${(order.tax || 0).toFixed(2)}</span>
-            </div>
-            <div className="border-t border-gray-700 pt-3 flex justify-between text-lg font-bold text-indigo-400">
-              <span>Total</span>
-              <span>${(order.totalAmount || 0).toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-4">
-          <Link to="/" className="flex-1">
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition">
-              Continue Shopping
-            </button>
-          </Link>
-          <Link to="/" className="flex-1">
-            <button className="w-full border border-gray-600 hover:border-indigo-500 text-gray-300 hover:text-indigo-400 font-bold py-3 rounded-lg transition">
-              Back to Home
-            </button>
-          </Link>
-        </div>
-
-        {/* Info */}
-        <div className="mt-8 rounded-lg border border-gray-700 bg-[#111827] p-6 text-center text-gray-400">
-          <p>📦 Your order will be delivered within 3-5 business days</p>
-          <p className="mt-2">
-            📧 A confirmation email has been sent to your registered email
-          </p>
-        </div>
-      </div>
-    </div>
+      <Box display="flex" gap={2} justifyContent="center">
+        <Button variant="contained" component={Link} to="/">Continue Shopping</Button>
+        <Button variant="outlined" component={Link} to="/orders">View Orders</Button>
+      </Box>
+    </Container>
   );
 }

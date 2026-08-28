@@ -1,378 +1,177 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
-import { useNavigate, Link } from "react-router";
+import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function CheckoutAddress() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    fullName: "",
-    phone: "",
-    addressLine: "",
-    district: "",
-    province: "",
-    pincode: "",
+    fullName: "", phone: "", addressLine: "", district: "", province: "", pincode: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [previousAddresses, setPreviousAddresses] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
-  // Load previous addresses on mount
   useEffect(() => {
     const loadPreviousAddresses = async () => {
       try {
-        const res = await api.get(`/address`);
-        console.log("Address Response:", res.data); // DEBUG
+        const res = await api.get("/address");
         if (Array.isArray(res.data.address)) {
           setPreviousAddresses(res.data.address);
         } else if (Array.isArray(res.data)) {
           setPreviousAddresses(res.data);
         }
-      } catch (err) {
-        console.error("Error loading addresses:", err);
+      } catch {
+        console.error("Error loading addresses");
       }
     };
-
-    if (user) {
-      loadPreviousAddresses();
-    }
+    if (user) loadPreviousAddresses();
   }, [user]);
 
-  // Close modal on escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        setShowModal(false);
-      }
-    };
-
-    if (showModal) {
-      window.addEventListener("keydown", handleEscape);
-    }
-
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [showModal]);
-
-  // Fill form with selected address
   const selectAddress = async (address) => {
     try {
-      // Set this address as active in backend
-      await api.post(`/address/set-active`, {
-        addressId: address._id,
-      });
-
-      // Fill the form
+      await api.post("/address/set-active", { addressId: address._id });
       setForm({
-        fullName: address.fullName || "",
-        phone: address.phone || "",
-        addressLine: address.addressLine || "",
-        district: address.district || "",
-        province: address.province || "",
-        pincode: address.pincode || "",
+        fullName: address.fullName, phone: address.phone, addressLine: address.addressLine,
+        district: address.district, province: address.province, pincode: address.pincode,
       });
       setShowModal(false);
-    } catch (err) {
-      console.error("Error setting address active:", err);
-      // Still fill form even if backend call fails
-      setForm({
-        fullName: address.fullName || "",
-        phone: address.phone || "",
-        addressLine: address.addressLine || "",
-        district: address.district || "",
-        province: address.province || "",
-        pincode: address.pincode || "",
-      });
-      setShowModal(false);
+    } catch {
+      console.error("Error setting address");
     }
   };
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const saveAddress = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
 
-    // Validate form
-    if (
-      !form.fullName ||
-      !form.phone ||
-      !form.addressLine ||
-      !form.district ||
-      !form.province ||
-      !form.pincode
-    ) {
-      setError("All fields are required");
-      return;
-    }
-
-    // Validate phone number (10 digits)
-    if (!/^\d{10}$/.test(form.phone)) {
+    if (form.phone.length !== 10) {
       setError("Phone number must be 10 digits");
       return;
     }
-
-    // Validate pincode (6 digits)
-    if (!/^\d{6}$/.test(form.pincode)) {
+    if (form.pincode.length !== 6) {
       setError("Pincode must be 6 digits");
       return;
     }
 
     try {
       setLoading(true);
-      setError(null);
-
-      await api.post(`/address/add`, {
-        ...form,
-      });
-
-      // Always navigate to checkout (whether new address or already exists)
+      await api.post("/address/add", { ...form });
       navigate("/checkout");
     } catch (err) {
-      console.error("Error saving address:", err);
-      // Navigate to checkout anyway
-      navigate("/checkout");
+      setError(err.response?.data?.message || "Failed to save address");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user?.id) {
-    return (
-      <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Checkout Address</h1>
-          <div className="rounded-md bg-red-500/10 px-4 py-3 text-red-400 border border-red-500/20 mb-4">
-            Please login to continue checkout
-          </div>
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300">
-            ← Back to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            to="/cart"
-            className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 mb-4"
-          >
-            ← Back to Cart
-          </Link>
-          <h1 className="text-4xl font-bold mb-2">Delivery Address</h1>
-          <p className="text-gray-400">Please enter your delivery address</p>
-        </div>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>Delivery Address</Typography>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 rounded-md bg-red-500/10 px-4 py-3 text-red-400 border border-red-500/20">
-            {error}
-          </div>
-        )}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {/* Previous Addresses Button */}
-        {previousAddresses.length > 0 && (
-          <div className="mb-6">
-            <button
-              type="button"
-              onClick={() => setShowModal(true)}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition"
-            >
-              📋 Use Previous Address ({previousAddresses.length})
-            </button>
-          </div>
-        )}
-
-        {/* Form Container */}
-        <form
-          onSubmit={saveAddress}
-          className="rounded-lg border border-gray-700 bg-[#111827] p-8"
-        >
-          {/* Full Name */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Full Name <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              value={form.fullName}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition"
-            />
-          </div>
-
-          {/* Phone Number */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Phone Number <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="Enter 10-digit phone number"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition"
-            />
-            <p className="text-xs text-gray-500 mt-1">10 digits required</p>
-          </div>
-
-          {/* Address Line */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Address <span className="text-red-400">*</span>
-            </label>
-            <textarea
-              name="addressLine"
-              value={form.addressLine}
-              onChange={handleChange}
-              placeholder="Enter your complete address (street, building, etc.)"
-              rows="3"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition resize-none"
-            ></textarea>
-          </div>
-
-          {/* District */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              District <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              name="district"
-              value={form.district}
-              onChange={handleChange}
-              placeholder="Enter district"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition"
-            />
-          </div>
-
-          {/* Province */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Province <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              name="province"
-              value={form.province}
-              onChange={handleChange}
-              placeholder="Enter province"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition"
-            />
-          </div>
-
-          {/* Pincode */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Pincode <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              name="pincode"
-              value={form.pincode}
-              onChange={handleChange}
-              placeholder="Enter 6-digit pincode"
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 transition"
-            />
-            <p className="text-xs text-gray-500 mt-1">6 digits required</p>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition"
-            >
-              {loading ? "Saving..." : "Continue to Payment"}
-            </button>
-            <Link to="/cart" className="flex-1">
-              <button
-                type="button"
-                className="w-full border border-gray-600 hover:border-indigo-500 text-gray-300 hover:text-indigo-400 font-bold py-3 rounded-lg transition"
-              >
-                Back to Cart
-              </button>
-            </Link>
-          </div>
-        </form>
-
-        {/* Info Box */}
-        <div className="mt-8 rounded-lg border border-gray-700 bg-[#111827] p-6">
-          <h3 className="text-lg font-bold text-indigo-400 mb-3">
-            Delivery Info
-          </h3>
-          <ul className="text-sm text-gray-400 space-y-2">
-            <li>✓ Deliver to your address within 3-5 business days</li>
-            <li>✓ Free shipping on all orders</li>
-            <li>✓ You'll receive an SMS with tracking details</li>
-            <li>✓ Make sure your phone number is correct</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Modal for Previous Addresses */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 px-6">
-          <div className="bg-[#111827] border border-gray-700 rounded-lg max-w-md w-full max-h-96 relative flex flex-col">
-            {/* Fixed Close Button */}
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl z-10"
-            >
-              ✕
-            </button>
-
-            {/* Header with padding for close button */}
-            <div className="p-6 pb-4">
-              <h2 className="text-xl font-bold text-white">
-                Select Previous Address
-              </h2>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="overflow-y-auto flex-1 px-6">
-              <div className="space-y-3">
-                {previousAddresses.map((address, index) => (
-                  <button
-                    key={index}
-                    onClick={() => selectAddress(address)}
-                    className="w-full border border-gray-600 hover:border-indigo-500 hover:bg-gray-700/30 rounded-lg p-4 text-left transition"
-                  >
-                    <p className="font-medium text-gray-100">
-                      {address.fullName}
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {address.addressLine}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      {address.district}, {address.province} {address.pincode}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      📞 {address.phone}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+      {previousAddresses.length > 0 && (
+        <Button variant="outlined" onClick={() => setShowModal(true)} sx={{ mb: 2 }}>
+          Use a previous address
+        </Button>
       )}
-    </div>
+
+      <Paper sx={{ p: 4 }}>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth label="Full Name" name="fullName" value={form.fullName} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth label="Phone" name="phone" value={form.phone} onChange={handleChange} required inputProps={{ maxLength: 10 }} />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField fullWidth label="Address Line" name="addressLine" value={form.addressLine} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField fullWidth label="District" name="district" value={form.district} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField fullWidth label="Province" name="province" value={form.province} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField fullWidth label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} required inputProps={{ maxLength: 6 }} />
+            </Grid>
+          </Grid>
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            size="large"
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} /> : null}
+            sx={{ mt: 3 }}
+          >
+            {loading ? "Saving..." : "Save & Continue"}
+          </Button>
+        </Box>
+      </Paper>
+
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Select a Previous Address</DialogTitle>
+        <DialogContent>
+          <RadioGroup value={selectedAddressId} onChange={(e) => setSelectedAddressId(e.target.value)}>
+            {previousAddresses.map((addr) => (
+              <Paper key={addr._id} sx={{ p: 2, mb: 1 }}>
+                <FormControlLabel
+                  value={addr._id}
+                  control={<Radio />}
+                  label={
+                    <Box>
+                      <Typography fontWeight="medium">{addr.fullName}</Typography>
+                      <Typography variant="body2" color="text.secondary">{addr.addressLine}</Typography>
+                      <Typography variant="body2" color="text.secondary">{addr.district}, {addr.province} {addr.pincode}</Typography>
+                      <Typography variant="body2" color="text.secondary">Phone: {addr.phone}</Typography>
+                    </Box>
+                  }
+                />
+              </Paper>
+            ))}
+          </RadioGroup>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            disabled={!selectedAddressId}
+            onClick={() => {
+              const addr = previousAddresses.find((a) => a._id === selectedAddressId);
+              if (addr) selectAddress(addr);
+            }}
+          >
+            Use This Address
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 }

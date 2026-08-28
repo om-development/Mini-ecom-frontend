@@ -1,7 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../api/axios";
 import { Link, useSearchParams } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import Pagination from "@mui/material/Pagination";
+import Snackbar from "@mui/material/Snackbar";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+
+const ITEMS_PER_PAGE = 8;
 
 const Home = () => {
   const { user } = useAuth();
@@ -9,263 +28,227 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
 
-  // Get query parameters from URL
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
   const category = searchParams.get("category") || "All Categories";
 
-  // Fetch products based on search and category from backend
   const loadProducts = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Send search and category to backend
-      const response = await api.get("/products", {
-        params: {
-          search: search || undefined,
-          category: category === "All Categories" ? undefined : category,
-        },
-      });
-
-      setProducts(response.data.products || []);
-    } catch (err) {
-      console.error("Error loading products:", err);
+      const params = {};
+      if (search) params.search = search;
+      if (category && category !== "All Categories") params.category = category;
+      const res = await api.get("/products", { params });
+      setProducts(res.data.products || []);
+    } catch {
       setError("Failed to load products");
     } finally {
       setLoading(false);
     }
   };
 
-  // Load categories on mount
   const loadCategories = async () => {
     try {
-      const response = await api.get("/products/categories");
-      const fetchedCategories = response.data.categories || [];
-      setCategories(["All Categories", ...fetchedCategories]);
-    } catch (err) {
-      console.error("Error loading categories:", err);
-      setError("Failed to load categories");
+      const res = await api.get("/products/categories");
+      setCategories(res.data.categories || []);
+    } catch {
+      console.error("Failed to load categories");
     }
   };
 
-  // Add to cart function
   const addToCart = async (productId) => {
+    if (!user) {
+      setToast({ open: true, message: "Please login to add items to cart", severity: "warning" });
+      return;
+    }
     try {
-      if (!user) {
-        alert("Please login to add items to cart");
-        return;
-      }
-
-      const res = await api.post(`/cart/add`, { productId });
-
-      // Dispatch event to trigger navbar update
+      await api.post("/cart/add", { productId });
       window.dispatchEvent(new Event("cartUpdated"));
-      alert("Product added to cart!");
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      alert("Failed to add product to cart");
+      setToast({ open: true, message: "Product added to cart!", severity: "success" });
+    } catch {
+      setToast({ open: true, message: "Failed to add product to cart", severity: "error" });
     }
   };
 
-  // Load categories on component mount
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  useEffect(() => { loadCategories(); }, []);
+  useEffect(() => { loadProducts(); setPage(1); }, [search, category]);
 
-  // Load products when URL parameters change
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadProducts();
-    }, 300); // 300ms debounce
+  const handleSearch = useCallback(
+    (e) => {
+      const val = e.target.value;
+      setSearchParams((prev) => {
+        if (val) prev.set("search", val);
+        else prev.delete("search");
+        return prev;
+      });
+    },
+    [setSearchParams]
+  );
 
-    return () => clearTimeout(timer);
-  }, [search, category]);
-
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    const newSearch = e.target.value;
-    if (newSearch) {
-      setSearchParams({ search: newSearch, category });
-    } else {
-      // Clear search parameter if input is empty
-      setSearchParams({ category });
-    }
+  const handleCategory = (cat) => {
+    setSearchParams((prev) => {
+      if (cat && cat !== "All Categories") prev.set("category", cat);
+      else prev.delete("category");
+      return prev;
+    });
   };
 
-  // Handle category change
-  const handleCategoryChange = (newCategory) => {
-    if (newCategory === "All Categories") {
-      setSearchParams(search ? { search } : {});
-    } else {
-      setSearchParams({ category: newCategory, ...(search && { search }) });
-    }
-  };
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const paginatedProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-      {/* Filter Section */}
-      <div className="mb-10">
-        {/* Search and Category Container */}
-        <div className="mb-8">
-          {/* Search Input */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-gray-300">
-              Search Products
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={search}
-                onChange={handleSearchChange}
-                className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 pr-10 text-sm text-white outline-none placeholder:text-gray-500 focus:border-indigo-500"
-              />
-              <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
-            </div>
-          </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
+        Products
+      </Typography>
 
-          {/* Category Dropdown */}
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-300">
-              Category
-            </label>
-            <select
-              value={category}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
+      <TextField
+        fullWidth
+        placeholder="Search products..."
+        value={search}
+        onChange={handleSearch}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          },
+        }}
+        sx={{ mb: 3 }}
+      />
 
-      {/* Error Message */}
+      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 3 }}>
+        <Chip
+          label="All Categories"
+          clickable
+          color={category === "All Categories" || !category ? "primary" : "default"}
+          onClick={() => handleCategory("All Categories")}
+        />
+        {categories.map((cat) => (
+          <Chip
+            key={cat}
+            label={cat}
+            clickable
+            color={category === cat ? "primary" : "default"}
+            onClick={() => handleCategory(cat)}
+          />
+        ))}
+      </Box>
+
       {error && (
-        <div className="mb-6 rounded-md bg-red-500/10 px-4 py-3 text-red-400 border border-red-500/20">
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
-        </div>
+        </Alert>
       )}
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-        </div>
-      )}
-
-      {/* Products Grid */}
-      {!loading && products.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="max-w-md rounded-md overflow-hidden shadow-md hover:shadow-lg transition-shadow bg-[#111827] border border-gray-700 hover:border-indigo-500"
-            >
-              {/* Image Container */}
-              <div className="relative">
-                <img
-                  className="w-full h-48 object-cover bg-gray-800"
-                  src={product.image}
-                  alt={product.title}
-                />
-                {/* Sale Badge - Show if stock is low */}
-                {product.stock < 5 && product.stock > 0 && (
-                  <div className="absolute top-0 right-0 bg-orange-500 text-white px-2 py-1 m-2 rounded-md text-sm font-medium">
-                    SALE
-                  </div>
-                )}
-                {/* Out of Stock Badge */}
-                {product.stock === 0 && (
-                  <div className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 m-2 rounded-md text-sm font-medium">
-                    OUT OF STOCK
-                  </div>
-                )}
-              </div>
-
-              {/* Card Content */}
-              <div className="p-4">
-                {/* Product Title */}
-                <h3 className="text-lg font-medium mb-2 text-gray-100 truncate">
-                  {product.title}
-                </h3>
-
-                {/* Category Badge */}
-                <div className="mb-3">
-                  <span className="inline-block bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full text-xs font-medium">
-                    {product.category}
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                  {product.description || "High quality product"}
-                </p>
-
-                {/* Stock Status */}
-                <div className="mb-4">
-                  <span
-                    className={`text-sm font-medium ${
-                      product.stock > 0 ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                    {product.stock > 0
-                      ? `${product.stock} in stock`
-                      : "Out of stock"}
-                  </span>
-                </div>
-
-                {/* Price and Buttons */}
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-lg text-indigo-400">
-                    ${product.price.toFixed(2)}
-                  </span>
-
-                  <div className="flex gap-2 ml-auto">
-                    {/* Add to Cart Button */}
-                    <button
-                      onClick={() => addToCart(product._id)}
-                      disabled={product.stock === 0}
-                      className={`${
-                        product.stock > 0
-                          ? "bg-indigo-500 hover:bg-indigo-600"
-                          : "bg-gray-600 cursor-not-allowed"
-                      } text-white font-bold py-2 px-3 rounded transition text-sm`}
+      {loading ? (
+        <Box display="flex" justifyContent="center" py={8}>
+          <CircularProgress />
+        </Box>
+      ) : paginatedProducts.length === 0 ? (
+        <Box textAlign="center" py={8}>
+          <Typography variant="h6" color="text.secondary">
+            No products found
+          </Typography>
+        </Box>
+      ) : (
+        <>
+          <Grid container spacing={3}>
+            {paginatedProducts.map((product) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    transition: "transform 0.2s",
+                    "&:hover": { transform: "translateY(-4px)" },
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={product.image}
+                    alt={product.title}
+                    sx={{ objectFit: "cover" }}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                      {product.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {product.category}
+                    </Typography>
+                    <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                      ${product.price.toFixed(2)}
+                    </Typography>
+                    {product.stock < 5 && product.stock > 0 && (
+                      <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
+                        Only {product.stock} left
+                      </Alert>
+                    )}
+                    {product.stock === 0 && (
+                      <Alert severity="error" sx={{ mt: 1, py: 0 }}>
+                        Out of stock
+                      </Alert>
+                    )}
+                  </CardContent>
+                  <CardActions sx={{ p: 2, pt: 0 }}>
+                    <Button
+                      size="small"
+                      component={Link}
+                      to={`/product/${product._id}`}
                     >
-                      {product.stock > 0 ? "Add" : "Out"}
-                    </button>
+                      View
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      disabled={product.stock === 0}
+                      onClick={() => addToCart(product._id)}
+                    >
+                      Add to Cart
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
 
-                    {/* View Details Link */}
-                    <Link to={`/product/${product._id}`}>
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded transition text-sm">
-                        View
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+          {totalPages > 1 && (
+            <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(_, val) => setPage(val)}
+                color="primary"
+              />
+            </Box>
+          )}
+        </>
       )}
 
-      {/* Empty State */}
-      {!loading && products.length === 0 && !error && (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">
-            {search || category !== "All Categories"
-              ? "No products found matching your filters."
-              : "No products available."}
-          </p>
-        </div>
-      )}
-    </div>
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast({ ...toast, open: false })}
+          severity={toast.severity}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 

@@ -1,256 +1,142 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import api from "../api/axios";
-import { Link, useSearchParams } from "react-router";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Box from "@mui/material/Box";
+import Pagination from "@mui/material/Pagination";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import Snackbar from "@mui/material/Snackbar";
 
-const ProductList = () => {
+export default function ProductList() {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [toast, setToast] = useState(null);
 
-  // Get query parameters from URL
-  const [searchParams, setSearchParams] = useSearchParams();
-  const search = searchParams.get("search") || "";
-  const category = searchParams.get("category") || "All Categories";
-
-  // Fetch products based on search and category from backend
-  const loadProducts = async () => {
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Send search and category to backend
-      const response = await api.get("/products", {
-        params: {
-          search: search || undefined,
-          category: category === "All Categories" ? undefined : category,
-        },
-      });
-
-      setProducts(response.data.products || []);
-    } catch (err) {
-      console.error("Error loading products:", err);
-      setError("Failed to load products");
+      const res = await api.get(`/products/all?page=${page}`);
+      setProducts(res.data.products || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch {
+      setError("Failed to fetch products");
     } finally {
       setLoading(false);
     }
   };
 
-  // Load categories on mount
-  const loadCategories = async () => {
-    try {
-      const response = await api.get("/products/categories");
-      const fetchedCategories = response.data.categories || [];
-      setCategories(["All Categories", ...fetchedCategories]);
-    } catch (err) {
-      console.error("Error loading categories:", err);
-      setError("Failed to load categories");
-    }
-  };
+  useEffect(() => { fetchProducts(); }, [page]);
 
-  // Delete product
-  const deleteProduct = async (id) => {
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
     try {
       await api.delete(`/products/delete/${id}`);
-      // Reload products after deletion
-      loadProducts();
-    } catch (err) {
-      console.error("Error while deleting product:", err);
-      setError("Failed to delete product");
+      setToast({ type: "success", msg: "Product deleted" });
+      fetchProducts();
+    } catch {
+      setToast({ type: "error", msg: "Failed to delete product" });
     }
   };
 
-  // Load categories on component mount
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  // Load products when URL parameters change
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadProducts();
-    }, 300); // 300ms debounce
-
-    return () => clearTimeout(timer);
-  }, [search, category]);
-
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    const newSearch = e.target.value;
-    if (newSearch) {
-      setSearchParams({ search: newSearch, category });
-    } else {
-      // Clear search parameter if input is empty
-      setSearchParams({ category });
-    }
-  };
-
-  // Handle category change
-  const handleCategoryChange = (e) => {
-    const newCategory = e.target.value;
-    if (newCategory === "All Categories") {
-      setSearchParams(search ? { search } : {});
-    } else {
-      setSearchParams({ category: newCategory, ...(search && { search }) });
-    }
-  };
+  if (loading && products.length === 0) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold">Products</h1>
-          <p className="mt-1 text-gray-400">
-            You have total{" "}
-            <span className="text-indigo-400">{products.length}</span>{" "}
-            {products.length === 1 ? "product" : "products"}.
-          </p>
-        </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold">Products</Typography>
+          <Typography variant="body2" color="text.secondary">Manage your product inventory</Typography>
+        </Box>
+        <Button variant="contained" startIcon={<AddIcon />} component={Link} to="/admin/product/add">
+          Add Product
+        </Button>
+      </Box>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          {/* Search Input */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={handleSearchChange}
-              className="w-full rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 pr-10 text-sm text-white outline-none placeholder:text-gray-500 focus:border-indigo-500 sm:w-64"
-            />
-            <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
-          </div>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-          {/* Category Filter */}
-          <select
-            value={category}
-            onChange={handleCategoryChange}
-            className="rounded-md border border-gray-600 bg-[#1e293b] px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500"
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-
-          {/* Add Product Button */}
-          <Link to="/admin/product/add">
-            <button className="rounded-md bg-indigo-500 px-5 py-2.5 font-medium transition hover:bg-indigo-600">
-              + Add Product
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="mb-4 rounded-md bg-red-500/10 px-4 py-3 text-red-400 border border-red-500/20">
-          {error}
-        </div>
-      )}
-
-      {/* Product Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-700 bg-[#111827]">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-700 text-left text-sm text-gray-400">
-                <th className="px-6 py-4">Product</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Stock</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
+      <Paper>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Product</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell align="right">Price</TableCell>
+                <TableCell align="right">Stock</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {products.map((product) => (
-                <tr
-                  key={product._id}
-                  className="border-b border-gray-700 last:border-0 hover:bg-[#172033]"
-                >
-                  {/* Product */}
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-md bg-gray-800">
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          className="h-full w-full object-contain"
-                        />
-                      </div>
-                      <span className="font-medium text-gray-100">
-                        {product.title}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Price */}
-                  <td className="px-6 py-5 font-medium text-gray-200">
-                    ${product.price.toFixed(2)}
-                  </td>
-
-                  {/* Stock */}
-                  <td className="px-6 py-5">
-                    <span
-                      className={
-                        product.stock === 0
-                          ? "text-red-400"
-                          : product.stock < 10
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                      }
-                    >
-                      {product.stock}
-                    </span>
-                  </td>
-
-                  {/* Category */}
-                  <td className="px-6 py-5">
-                    <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-sm text-indigo-400">
-                      {product.category}
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="px-6 py-5 text-right">
-                    <Link to={`/admin/product/edit/${product._id}`}>
-                      <button className="mr-2 rounded-md px-3 py-2 text-sm text-indigo-400 hover:bg-indigo-500/10">
-                        Edit
-                      </button>
-                    </Link>
-                    <button
-                      onClick={() => deleteProduct(product._id)}
-                      className="rounded-md px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <TableRow key={product._id}>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Box component="img" src={product.image} alt={product.title} sx={{ width: 40, height: 40, borderRadius: 1, objectFit: "cover" }} />
+                      <Typography variant="body2" fontWeight="medium">{product.title}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell align="right">${product.price?.toFixed(2)}</TableCell>
+                  <TableCell align="right">{product.stock}</TableCell>
+                  <TableCell align="right">
+                    <IconButton size="small" color="primary" component={Link} to={`/admin/product/edit/${product._id}`}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton size="small" color="error" onClick={() => handleDelete(product._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+              {products.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Typography textAlign="center" color="text.secondary" sx={{ py: 4 }}>
+                      No products found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="px-6 py-12 text-center text-gray-400">
-            Loading products...
-          </div>
+        {totalPages > 1 && (
+          <Box display="flex" justifyContent="center" sx={{ py: 2 }}>
+            <Pagination count={totalPages} page={page} onChange={(_, val) => setPage(val)} color="primary" />
+          </Box>
         )}
+      </Paper>
 
-        {/* Empty State */}
-        {!loading && products.length === 0 && (
-          <div className="px-6 py-12 text-center text-gray-400">
-            {search || category !== "All Categories"
-              ? "No products found matching your filters."
-              : "No products available."}
-          </div>
-        )}
-      </div>
-    </div>
+      <Snackbar open={!!toast} autoHideDuration={3000} onClose={() => setToast(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert onClose={() => setToast(null)} severity={toast?.type} sx={{ width: "100%" }}>
+          {toast?.msg}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
-};
-
-export default ProductList;
+}

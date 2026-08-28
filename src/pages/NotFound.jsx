@@ -1,18 +1,23 @@
 import { Link } from "react-router";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-indigo-400 mb-4">404</h1>
-        <p className="text-xl text-gray-400 mb-6">Page not found</p>
-        <Link
-          to="/"
-          className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition"
-        >
+    <Container maxWidth="sm">
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="60vh">
+        <Typography variant="h1" color="primary" fontWeight="bold">
+          404
+        </Typography>
+        <Typography variant="h5" color="text.secondary" sx={{ mb: 3 }}>
+          Page not found
+        </Typography>
+        <Button variant="contained" component={Link} to="/" size="large">
           Back to Home
-        </Link>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Container>
   );
 }

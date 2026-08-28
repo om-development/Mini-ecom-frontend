@@ -1,200 +1,90 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function AddProduct() {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    price: "",
-    category: "",
-    image: "",
-    stock: "",
-  });
-
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    title: "", description: "", price: "", category: "", image: "", stock: "",
+  });
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setSubmitting(true);
     try {
-      await api.post("/products/add", form);
-      alert("Product added Sucessfully");
+      await api.post("/products/add", {
+        ...form,
+        price: Number(form.price),
+        stock: Number(form.stock),
+      });
       navigate("/admin/product/list");
     } catch (err) {
-      console.error({ message: "Something is wrong", err });
+      setError(err.response?.data?.message || "Failed to add product");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-semibold text-gray-100">
-              Add Product
-            </h1>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>Add Product</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Add a new product to your store
+      </Typography>
 
-            <p className="mt-2 text-gray-400">
-              Add a new product to your store
-            </p>
-          </div>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-          <div className="bg-[#111827] border border-gray-700 rounded-lg p-7 shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Title */}
-              <div>
-                <label
-                  htmlFor="title"
-                  className="block mb-2 text-sm text-gray-300"
-                >
-                  Product Title
-                </label>
-
-                <input
-                  type="text"
-                  name="title"
-                  id="title"
-                  onChange={handleChange}
-                  placeholder="Enter product title"
-                  className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                       text-gray-100 placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500
-                       focus:border-indigo-500"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block mb-2 text-sm text-gray-300"
-                >
-                  Description
-                </label>
-
-                <textarea
-                  name="description"
-                  id="description"
-                  rows="4"
-                  onChange={handleChange}
-                  placeholder="Describe your product..."
-                  className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                       text-gray-100 placeholder-gray-500 resize-none
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500
-                       focus:border-indigo-500"
-                />
-              </div>
-
-              {/* Price + Stock */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label
-                    htmlFor="price"
-                    className="block mb-2 text-sm text-gray-300"
-                  >
-                    Price
-                  </label>
-
-                  <input
-                    type="number"
-                    name="price"
-                    id="price"
-                    onChange={handleChange}
-                    placeholder="0.00"
-                    className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                         text-gray-100 placeholder-gray-500
-                         focus:outline-none focus:ring-2 focus:ring-indigo-500
-                         focus:border-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="stock"
-                    className="block mb-2 text-sm text-gray-300"
-                  >
-                    Stock
-                  </label>
-
-                  <input
-                    type="number"
-                    name="stock"
-                    id="stock"
-                    onChange={handleChange}
-                    placeholder="0"
-                    className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                         text-gray-100 placeholder-gray-500
-                         focus:outline-none focus:ring-2 focus:ring-indigo-500
-                         focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label
-                  htmlFor="category"
-                  className="block mb-2 text-sm text-gray-300"
-                >
-                  Category
-                </label>
-
-                <input
-                  type="text"
-                  name="category"
-                  onChange={handleChange}
-                  id="category"
-                  placeholder="e.g. Electronics"
-                  className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                       text-gray-100 placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500
-                       focus:border-indigo-500"
-                />
-              </div>
-
-              {/* Image */}
-              <div>
-                <label
-                  htmlFor="image"
-                  className="block mb-2 text-sm text-gray-300"
-                >
-                  Image URL
-                </label>
-
-                <input
-                  type="text"
-                  name="image"
-                  onChange={handleChange}
-                  id="image"
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 bg-[#374151] border border-gray-600 rounded-md
-                       text-gray-100 placeholder-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500
-                       focus:border-indigo-500"
-                />
-              </div>
-
-              {/* Submit */}
-              <button
-                type="submit"
-                className="w-full py-3 mt-2 text-white font-medium
-                     bg-indigo-500 rounded-md
-                     hover:bg-indigo-600
-                     focus:outline-none focus:ring-2 focus:ring-indigo-400
-                     transition"
-              >
-                Add Product
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </>
+      <Paper sx={{ p: 4 }}>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12 }}>
+              <TextField fullWidth label="Product Title" name="title" value={form.title} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField fullWidth multiline rows={4} label="Description" name="description" value={form.description} onChange={handleChange} required />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth type="number" label="Price" name="price" value={form.price} onChange={handleChange} required inputProps={{ min: 0, step: 0.01 }} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth type="number" label="Stock" name="stock" value={form.stock} onChange={handleChange} required inputProps={{ min: 0 }} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth label="Category" name="category" value={form.category} onChange={handleChange} required placeholder="e.g. Electronics" />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField fullWidth label="Image URL" name="image" value={form.image} onChange={handleChange} required placeholder="https://example.com/image.jpg" />
+            </Grid>
+          </Grid>
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            size="large"
+            disabled={submitting}
+            startIcon={submitting ? <CircularProgress size={20} /> : null}
+            sx={{ mt: 3 }}
+          >
+            {submitting ? "Adding..." : "Add Product"}
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }
