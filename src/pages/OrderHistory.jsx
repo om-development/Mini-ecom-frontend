@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 const statusConfig = {
   Placed: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
@@ -114,6 +115,33 @@ export default function OrderHistory() {
                   },
                 }}
               >
+                {/* First Product Image */}
+                <Box
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    backgroundColor: "#0a0a0a",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {order.items?.[0]?.image ? (
+                    <Box
+                      component="img"
+                      src={order.items[0].image}
+                      alt={order.items[0].title}
+                      sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <Inventory2OutlinedIcon sx={{ fontSize: 20, color: "rgba(255,255,255,0.08)" }} />
+                  )}
+                </Box>
+
                 {/* Status Dot + Label */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 120, flexShrink: 0 }}>
                   <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: status.color, boxShadow: `0 0 8px ${status.color}40` }} />
@@ -161,8 +189,9 @@ export default function OrderHistory() {
                   <Button
                     variant="outlined"
                     size="small"
-                    sx={{ fontSize: "0.75rem", py: 0.5, px: 1.5, minWidth: "auto" }}
-                    onClick={(e) => e.preventDefault()}
+                    component={Link}
+                    to={`/order-success/${order._id}`}
+                    sx={{ fontSize: "0.75rem", py: 0.5, px: 1.5, minWidth: "auto", textDecoration: "none" }}
                   >
                     View
                   </Button>

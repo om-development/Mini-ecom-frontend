@@ -15,6 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 const statusConfig = {
   Placed: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
@@ -206,11 +207,48 @@ export default function OrderSuccess() {
             {order.items?.map((item, i) => (
               <Box key={i}>
                 {i > 0 && <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />}
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ px: 2.5, py: 1.75 }}>
-                  <Typography sx={{ color: "#6e6e73" }}>
-                    {item.title || "Product"} x {item.quantity}
+                <Box display="flex" alignItems="center" gap={2} sx={{ px: 2.5, py: 1.75 }}>
+                  {/* Product Image */}
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: "10px",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                      backgroundColor: "#0a0a0a",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {item.image ? (
+                      <Box
+                        component="img"
+                        src={item.image}
+                        alt={item.title}
+                        sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <Inventory2OutlinedIcon sx={{ fontSize: 24, color: "rgba(255,255,255,0.08)" }} />
+                    )}
+                  </Box>
+
+                  {/* Title + Quantity */}
+                  <Box flex={1} minWidth={0}>
+                    <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem", lineHeight: 1.3 }}>
+                      {item.title || "Product"}
+                    </Typography>
+                    <Typography sx={{ color: "#6e6e73", fontSize: "0.8125rem", mt: 0.25 }}>
+                      Qty: {item.quantity}
+                    </Typography>
+                  </Box>
+
+                  {/* Price */}
+                  <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem", flexShrink: 0 }}>
+                    ${(item.price * item.quantity).toFixed(2)}
                   </Typography>
-                  <Typography sx={{ fontWeight: 500 }}>${(item.price * item.quantity).toFixed(2)}</Typography>
                 </Box>
               </Box>
             ))}

@@ -10,7 +10,6 @@ import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -86,197 +85,243 @@ export default function ProductDetail() {
         : { color: "#10b981", text: `${product.stock} in stock` };
 
   return (
-    <Box>
+    <Box sx={{ backgroundColor: "#000000", minHeight: "100vh" }}>
       {/* Back button */}
       <Box sx={{ px: { xs: 3, md: 6 }, pt: { xs: 2, md: 3 } }}>
         <Button
           startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
           onClick={() => navigate(-1)}
-          sx={{ color: "#6e6e73" }}
+          sx={{ color: "#6e6e73", "&:hover": { color: "#ededed" } }}
         >
           Back
         </Button>
       </Box>
 
-      {/* Full-bleed image — 12px radius */}
-      <Box
-        sx={{
-          width: "100%",
-          height: { xs: 350, sm: 450, md: 520 },
-          mt: 1,
-          px: { xs: 3, md: 6 },
-        }}
-      >
-        {imgError ? (
-          <Box
-            sx={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "12px",
-              background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Inventory2OutlinedIcon sx={{ fontSize: 64, color: "rgba(255,255,255,0.08)" }} />
-          </Box>
-        ) : (
-          <Box
-            component="img"
-            src={product.image}
-            alt={product.title}
-            onError={() => setImgError(true)}
-            sx={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              borderRadius: "12px",
-            }}
-          />
-        )}
-      </Box>
-
-      {/* Content — max-width 600px per spec */}
-      <Container maxWidth="sm" sx={{ py: { xs: 4, md: 6 } }}>
-        <Typography
+      {/* Product — side-by-side layout */}
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        <Box
           sx={{
-            color: "#6e6e73",
-            fontSize: "0.75rem",
-            fontWeight: 500,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            mb: 1,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap: { xs: 4, md: 8 },
+            alignItems: "start",
           }}
         >
-          {product.category}
-        </Typography>
-
-        <Typography
-          variant="h2"
-          sx={{
-            fontWeight: 600,
-            letterSpacing: "-0.03em",
-            fontSize: { xs: "1.5rem", md: "2rem" },
-            mb: 1.5,
-            lineHeight: 1.2,
-          }}
-        >
-          {product.title}
-        </Typography>
-
-        <Typography
-          sx={{
-            fontWeight: 600,
-            fontSize: "1.5rem",
-            color: "#0071e3",
-            mb: 2,
-          }}
-        >
-          ${product.price.toFixed(2)}
-        </Typography>
-
-        {/* Stock status */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 3 }}>
+          {/* Image — contained, not full-bleed */}
           <Box
             sx={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              backgroundColor: stockStatus.color,
-              flexShrink: 0,
-            }}
-          />
-          <Typography sx={{ color: stockStatus.color, fontSize: "0.875rem", fontWeight: 500 }}>
-            {stockStatus.text}
-          </Typography>
-        </Box>
-
-        <Typography
-          sx={{
-            color: "#6e6e73",
-            lineHeight: 1.6,
-            mb: 4,
-            fontSize: "1rem",
-          }}
-        >
-          {product.description}
-        </Typography>
-
-        <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.08)" }} />
-
-        {/* Quantity stepper — pill shape per spec */}
-        <Box sx={{ mb: 3 }}>
-          <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em", mb: 1.5 }}>
-            Quantity
-          </Typography>
-          <Box
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: 980,
+              position: "relative",
+              borderRadius: "16px",
               overflow: "hidden",
+              backgroundColor: "#0a0a0a",
+              border: "1px solid rgba(255,255,255,0.08)",
+              aspectRatio: "1 / 1",
+              maxHeight: 500,
             }}
           >
-            <IconButton
-              size="small"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              disabled={quantity <= 1}
+            {imgError ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
+                }}
+              >
+                <Inventory2OutlinedIcon sx={{ fontSize: 64, color: "rgba(255,255,255,0.08)" }} />
+              </Box>
+            ) : (
+              <Box
+                component="img"
+                src={product.image}
+                alt={product.title}
+                onError={() => setImgError(true)}
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            )}
+
+            {/* Category badge on image */}
+            <Box
               sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 0,
-                color: "#6e6e73",
-                transition: "all 150ms ease",
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
-                "&:active": { transform: "scale(0.92)" },
+                position: "absolute",
+                top: 16,
+                left: 16,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: 980,
+                backgroundColor: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(12px)",
               }}
             >
-              <RemoveIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+              <Typography sx={{ color: "#fff", fontSize: "0.7rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                {product.category}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Details — right side */}
+          <Box sx={{ pt: { xs: 0, md: 2 } }}>
+            {/* Category (mobile visible, desktop hidden since badge is on image) */}
             <Typography
               sx={{
-                fontWeight: 500,
-                fontSize: "1rem",
-                minWidth: 48,
-                textAlign: "center",
-                userSelect: "none",
-              }}
-            >
-              {quantity}
-            </Typography>
-            <IconButton
-              size="small"
-              onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-              disabled={quantity >= product.stock}
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 0,
+                display: { xs: "block", md: "none" },
                 color: "#6e6e73",
-                transition: "all 150ms ease",
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
-                "&:active": { transform: "scale(0.92)" },
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                mb: 1,
               }}
             >
-              <AddIcon sx={{ fontSize: 16 }} />
-            </IconButton>
+              {product.category}
+            </Typography>
+
+            {/* Title */}
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 600,
+                letterSpacing: "-0.03em",
+                fontSize: { xs: "1.5rem", md: "2.25rem" },
+                mb: 1.5,
+                lineHeight: 1.2,
+              }}
+            >
+              {product.title}
+            </Typography>
+
+            {/* Price */}
+            <Typography
+              sx={{
+                fontWeight: 600,
+                fontSize: { xs: "1.5rem", md: "1.75rem" },
+                color: "#0071e3",
+                mb: 2,
+              }}
+            >
+              ${product.price.toFixed(2)}
+            </Typography>
+
+            {/* Stock */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 3 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: stockStatus.color }} />
+              <Typography sx={{ color: stockStatus.color, fontSize: "0.875rem", fontWeight: 500 }}>
+                {stockStatus.text}
+              </Typography>
+            </Box>
+
+            {/* Description */}
+            <Typography
+              sx={{
+                color: "#6e6e73",
+                lineHeight: 1.7,
+                mb: 4,
+                fontSize: "0.9375rem",
+              }}
+            >
+              {product.description}
+            </Typography>
+
+            {/* Divider */}
+            <Box sx={{ height: 1, backgroundColor: "rgba(255,255,255,0.08)", mb: 3 }} />
+
+            {/* Quantity + Add to Cart — horizontal */}
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 3 }}>
+              {/* Pill Stepper */}
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 980,
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <IconButton
+                  size="small"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 0,
+                    color: "#6e6e73",
+                    transition: "all 150ms ease",
+                    "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                    "&:active": { transform: "scale(0.92)" },
+                  }}
+                >
+                  <RemoveIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+                <Typography
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: "1rem",
+                    minWidth: 40,
+                    textAlign: "center",
+                    userSelect: "none",
+                  }}
+                >
+                  {quantity}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                  disabled={quantity >= product.stock}
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 0,
+                    color: "#6e6e73",
+                    transition: "all 150ms ease",
+                    "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                    "&:active": { transform: "scale(0.92)" },
+                  }}
+                >
+                  <AddIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+
+              {/* Add to Cart */}
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={product.stock === 0}
+                onClick={addToCart}
+                startIcon={<AddShoppingCartIcon />}
+                sx={{ py: 1.5 }}
+              >
+                Add to Cart
+              </Button>
+            </Box>
+
+            {/* Trust signals */}
+            <Box sx={{ display: "flex", gap: 3 }}>
+              {[
+                { label: "Free Shipping", sub: "On orders over $50" },
+                { label: "Easy Returns", sub: "30 day return policy" },
+                { label: "Secure Checkout", sub: "SSL encrypted" },
+              ].map((item) => (
+                <Box key={item.label} sx={{ flex: 1 }}>
+                  <Typography sx={{ fontWeight: 500, fontSize: "0.8125rem", mb: 0.25 }}>
+                    {item.label}
+                  </Typography>
+                  <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem" }}>
+                    {item.sub}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
         </Box>
-
-        {/* Add to Cart — full width, primary blue */}
-        <Button
-          variant="contained"
-          size="large"
-          fullWidth
-          disabled={product.stock === 0}
-          onClick={addToCart}
-          startIcon={<AddShoppingCartIcon />}
-          sx={{ py: 1.5 }}
-        >
-          Add to Cart
-        </Button>
       </Container>
 
       <Snackbar
