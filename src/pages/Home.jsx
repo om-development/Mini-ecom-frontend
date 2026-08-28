@@ -15,6 +15,7 @@ import Snackbar from "@mui/material/Snackbar";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -26,6 +27,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+  const [imgErrors, setImgErrors] = useState({});
 
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
@@ -72,6 +74,10 @@ const Home = () => {
     }
   };
 
+  const handleImgError = (id) => {
+    setImgErrors((prev) => ({ ...prev, [id]: true }));
+  };
+
   useEffect(() => { loadCategories(); }, []);
   useEffect(() => { loadProducts(); setPage(1); }, [search, category]);
 
@@ -108,107 +114,178 @@ const Home = () => {
       <Box
         sx={{
           position: "relative",
-          borderRadius: "20px",
+          borderRadius: "16px",
           overflow: "hidden",
           cursor: "pointer",
-          height: large ? { xs: 320, md: 420 } : { xs: 280, md: 320 },
-          group: "card",
-          "&:hover .card-overlay": { opacity: 1 },
+          height: large ? { xs: 340, md: 480 } : { xs: 280, md: 340 },
           "&:hover .card-img": { transform: "scale(1.05)" },
           "&:hover .card-add-btn": { opacity: 1, transform: "translateY(0)" },
+          "&:hover .card-shadow": { opacity: 1 },
+          transition: "box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
+        {/* Hover shadow layer */}
         <Box
-          className="card-img"
-          component="img"
-          src={product.image}
-          alt={product.title}
+          className="card-shadow"
           sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            position: "absolute",
+            inset: -1,
+            borderRadius: "16px",
+            boxShadow: large
+              ? "0 16px 48px rgba(0,0,0,0.5)"
+              : "0 8px 32px rgba(0,0,0,0.4)",
+            opacity: 0,
+            transition: "opacity 0.3s ease",
+            pointerEvents: "none",
+            zIndex: 0,
           }}
         />
 
+        {/* Image */}
+        {imgErrors[product._id] ? (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Inventory2OutlinedIcon sx={{ fontSize: 48, color: "rgba(255,255,255,0.1)" }} />
+          </Box>
+        ) : (
+          <Box
+            className="card-img"
+            component="img"
+            src={product.image}
+            alt={product.title}
+            onError={() => handleImgError(product._id)}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+        )}
+
+        {/* Gradient overlay */}
         <Box
-          className="card-overlay"
           sx={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)",
+            background: large
+              ? "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 35%, transparent 55%)"
+              : "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 60%)",
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
             p: large ? { xs: 3, md: 4 } : { xs: 2.5, md: 3 },
+            zIndex: 2,
           }}
         >
           <Box>
-            <Typography
+            {/* Category pill */}
+            <Box
               sx={{
-                color: "rgba(255,255,255,0.6)",
-                fontSize: "0.7rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                mb: 0.5,
+                display: "inline-block",
+                backgroundColor: "rgba(255,255,255,0.1)",
+                backdropFilter: "blur(8px)",
+                borderRadius: 980,
+                px: 1.5,
+                py: 0.25,
+                mb: 1,
               }}
             >
-              {product.category}
-            </Typography>
+              <Typography
+                sx={{
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "0.65rem",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                {product.category}
+              </Typography>
+            </Box>
+
+            {/* Title */}
             <Typography
               sx={{
                 color: "#fff",
                 fontWeight: 500,
-                fontSize: large ? { xs: "1.25rem", md: "1.5rem" } : "1rem",
+                fontSize: large ? { xs: "1.25rem", md: "1.5rem" } : { xs: "0.9375rem", md: "1.0625rem" },
                 letterSpacing: "-0.01em",
                 mb: 0.5,
                 lineHeight: 1.3,
+                display: "-webkit-box",
+                WebkitLineClamp: large ? 2 : 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
               }}
             >
               {product.title}
             </Typography>
+
+            {/* Price + Add button row */}
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography
                 sx={{
-                  color: "#fff",
+                  color: large ? "#0071e3" : "#fff",
                   fontWeight: 600,
-                  fontSize: large ? "1.25rem" : "1rem",
+                  fontSize: large ? { xs: "1.25rem", md: "1.5rem" } : "1rem",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 ${product.price.toFixed(2)}
               </Typography>
+
               <Box
                 className="card-add-btn"
                 onClick={(e) => addToCart(e, product._id)}
                 sx={{
                   opacity: 0,
                   transform: "translateY(8px)",
-                  transition: "all 0.25s ease",
+                  transition: "all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                   display: "flex",
                   alignItems: "center",
                   gap: 0.5,
-                  backgroundColor: "#fff",
-                  color: "#000",
+                  backgroundColor: "#0071e3",
+                  color: "#fff",
                   borderRadius: 980,
-                  px: 2,
+                  px: large ? 2.5 : 2,
                   py: 0.75,
                   fontSize: "0.75rem",
-                  fontWeight: 600,
+                  fontWeight: 500,
                   cursor: "pointer",
-                  "&:hover": { backgroundColor: "#f0f0f0" },
+                  boxShadow: "0 4px 12px rgba(0,113,227,0.3)",
+                  "&:hover": {
+                    backgroundColor: "#0077ed",
+                    boxShadow: "0 6px 16px rgba(0,113,227,0.4)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.96)",
+                  },
                 }}
               >
                 <AddShoppingCartIcon sx={{ fontSize: 16 }} />
                 Add
               </Box>
             </Box>
+
+            {/* Stock indicators */}
             {product.stock === 0 && (
-              <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", mt: 0.5 }}>
+              <Typography sx={{ color: "#ef4444", fontSize: "0.7rem", fontWeight: 500, mt: 0.75 }}>
                 Out of stock
               </Typography>
             )}
             {product.stock > 0 && product.stock < 5 && (
-              <Typography sx={{ color: "rgba(255,200,0,0.8)", fontSize: "0.75rem", mt: 0.5 }}>
+              <Typography sx={{ color: "#f59e0b", fontSize: "0.7rem", fontWeight: 500, mt: 0.75 }}>
                 Only {product.stock} left
               </Typography>
             )}
@@ -261,7 +338,15 @@ const Home = () => {
                   ),
                 },
               }}
-              sx={{ flex: 1, maxWidth: 320 }}
+              sx={{
+                flex: 1,
+                maxWidth: 320,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused": {
+                    boxShadow: "0 0 0 3px rgba(0, 113, 227, 0.15)",
+                  },
+                },
+              }}
             />
             <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
               <Chip
@@ -271,6 +356,7 @@ const Home = () => {
                 color={category === "All Categories" || !category ? "primary" : "default"}
                 onClick={() => handleCategory("All Categories")}
                 variant={category === "All Categories" || !category ? "filled" : "outlined"}
+                sx={{ height: 34, px: 0.5 }}
               />
               {categories.map((cat) => (
                 <Chip
@@ -281,6 +367,7 @@ const Home = () => {
                   color={category === cat ? "primary" : "default"}
                   onClick={() => handleCategory(cat)}
                   variant={category === cat ? "filled" : "outlined"}
+                  sx={{ height: 34, px: 0.5 }}
                 />
               ))}
             </Box>
@@ -298,9 +385,13 @@ const Home = () => {
               <CircularProgress size={24} />
             </Box>
           ) : paginatedProducts.length === 0 ? (
-            <Box textAlign="center" py={12}>
-              <Typography sx={{ color: "text.secondary", fontSize: "1.125rem" }}>
+            <Box textAlign="center" py={14}>
+              <Inventory2OutlinedIcon sx={{ fontSize: 80, color: "text.disabled", mb: 3 }} />
+              <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 1 }}>
                 No products found
+              </Typography>
+              <Typography variant="body2" sx={{ color: "text.disabled" }}>
+                Try adjusting your search or filters
               </Typography>
             </Box>
           ) : (

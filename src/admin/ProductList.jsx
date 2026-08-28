@@ -4,7 +4,6 @@ import api from "../api/axios";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -20,6 +19,7 @@ import Snackbar from "@mui/material/Snackbar";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -68,19 +68,40 @@ export default function ProductList() {
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
         <Box>
-          <Typography variant="h3" sx={{ mb: 0.5 }}>Products</Typography>
+          <Typography variant="h2" sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.5rem", md: "2rem" }, mb: 0.5 }}>
+            Products
+          </Typography>
           <Typography variant="body1" sx={{ color: "text.secondary" }}>
             Manage your inventory
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} component={Link} to="/admin/product/add" size="small">
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          component={Link}
+          to="/admin/product/add"
+          size="small"
+          sx={{
+            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+            "&:hover": {
+              boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+            },
+          }}
+        >
           Add Product
         </Button>
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Paper>
+      <Box
+        sx={{
+          borderRadius: "16px",
+          border: "1px solid rgba(255,255,255,0.08)",
+          backgroundColor: "#0a0a0a",
+          overflow: "hidden",
+        }}
+      >
         <TableContainer>
           <Table>
             <TableHead>
@@ -94,14 +115,28 @@ export default function ProductList() {
             </TableHead>
             <TableBody>
               {products.map((product) => (
-                <TableRow key={product._id} hover>
+                <TableRow
+                  key={product._id}
+                  hover
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "rgba(255,255,255,0.02)",
+                    },
+                  }}
+                >
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={2}>
                       <Box
                         component="img"
                         src={product.image}
                         alt={product.title}
-                        sx={{ width: 40, height: 40, borderRadius: 1.5, objectFit: "cover" }}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 2,
+                          objectFit: "cover",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                        }}
                       />
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>{product.title}</Typography>
                     </Box>
@@ -114,14 +149,25 @@ export default function ProductList() {
                       size="small"
                       component={Link}
                       to={`/admin/product/edit/${product._id}`}
-                      sx={{ color: "text.secondary", "&:hover": { color: "text.primary" } }}
+                      sx={{
+                        color: "text.secondary",
+                        transition: "all 0.15s ease",
+                        "&:hover": { color: "#0071e3" },
+                      }}
                     >
                       <EditOutlinedIcon sx={{ fontSize: 18 }} />
                     </IconButton>
                     <IconButton
                       size="small"
                       onClick={() => handleDelete(product._id)}
-                      sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }}
+                      sx={{
+                        color: "text.secondary",
+                        transition: "all 0.15s ease",
+                        "&:hover": {
+                          color: "#ef4444",
+                          backgroundColor: "rgba(239,68,68,0.1)",
+                        },
+                      }}
                     >
                       <DeleteOutlinedIcon sx={{ fontSize: 18 }} />
                     </IconButton>
@@ -131,9 +177,12 @@ export default function ProductList() {
               {products.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5}>
-                    <Typography textAlign="center" sx={{ color: "text.secondary", py: 6 }}>
-                      No products found
-                    </Typography>
+                    <Box textAlign="center" py={8}>
+                      <Inventory2OutlinedIcon sx={{ fontSize: 48, color: "text.disabled", mb: 2 }} />
+                      <Typography sx={{ color: "text.secondary" }}>
+                        No products found
+                      </Typography>
+                    </Box>
                   </TableCell>
                 </TableRow>
               )}
@@ -146,7 +195,7 @@ export default function ProductList() {
             <Pagination count={totalPages} page={page} onChange={(_, val) => setPage(val)} color="primary" size="small" />
           </Box>
         )}
-      </Paper>
+      </Box>
 
       <Snackbar open={!!toast} autoHideDuration={2500} onClose={() => setToast(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={() => setToast(null)} severity={toast?.type} sx={{ width: "100%" }}>

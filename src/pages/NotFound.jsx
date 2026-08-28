@@ -17,6 +17,7 @@ export default function NotFound() {
             color: "text.disabled",
             lineHeight: 1,
             mb: 2,
+            animation: "float 3s ease-in-out infinite",
           }}
         >
           404
@@ -24,7 +25,17 @@ export default function NotFound() {
         <Typography variant="h5" sx={{ color: "text.secondary", mb: 4, fontWeight: 400 }}>
           Page not found
         </Typography>
-        <Button variant="contained" component={Link} to="/">
+        <Button
+          variant="contained"
+          component={Link}
+          to="/"
+          sx={{
+            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+            "&:hover": {
+              boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+            },
+          }}
+        >
           Go Home
         </Button>
       </Box>

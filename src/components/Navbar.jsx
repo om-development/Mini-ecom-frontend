@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import AppBar from "@mui/material/AppBar";
@@ -30,10 +30,12 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 export default function Navbar() {
   const { user, logout: authLogout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [cartAnimating, setCartAnimating] = useState(false);
 
   const loadCartData = async () => {
     if (!user) {
@@ -47,7 +49,12 @@ export default function Navbar() {
         setCartCount(0);
         return;
       }
-      setCartCount(cart.items.reduce((sum, item) => sum + item.quantity, 0));
+      const newCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+      if (newCount !== cartCount) {
+        setCartAnimating(true);
+        setTimeout(() => setCartAnimating(false), 300);
+      }
+      setCartCount(newCount);
     } catch {
       setCartCount(0);
     }
@@ -57,7 +64,7 @@ export default function Navbar() {
   useEffect(() => {
     window.addEventListener("cartUpdated", loadCartData);
     return () => window.removeEventListener("cartUpdated", loadCartData);
-  }, [user]);
+  }, [user, cartCount]);
 
   const logout = async () => {
     await authLogout();
@@ -65,6 +72,8 @@ export default function Navbar() {
     setDrawerOpen(false);
     navigate("/Login");
   };
+
+  const isActive = (path) => location.pathname === path;
 
   const navLinks = user
     ? [
@@ -90,7 +99,7 @@ export default function Navbar() {
           Mohit Store
         </Typography>
       </Box>
-      <Divider />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
       <List sx={{ px: 1 }}>
         {navLinks.map((link) => (
           <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
@@ -98,15 +107,31 @@ export default function Navbar() {
               component={Link}
               to={link.to}
               onClick={() => setDrawerOpen(false)}
-              sx={{ borderRadius: 10, py: 1.2 }}
+              selected={isActive(link.to)}
+              sx={{
+                borderRadius: 10,
+                py: 1.2,
+                "&.Mui-selected": {
+                  backgroundColor: "rgba(0,113,227,0.1)",
+                  "&:hover": { backgroundColor: "rgba(0,113,227,0.15)" },
+                },
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>{link.icon}</ListItemIcon>
-              <ListItemText primary={link.text} primaryTypographyProps={{ fontSize: "0.9375rem", fontWeight: 400 }} />
+              <ListItemIcon sx={{ minWidth: 36, color: isActive(link.to) ? "#0071e3" : "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemText
+                primary={link.text}
+                primaryTypographyProps={{
+                  fontSize: "0.9375rem",
+                  fontWeight: isActive(link.to) ? 500 : 400,
+                  color: isActive(link.to) ? "#0071e3" : "text.primary",
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
       <List sx={{ px: 1 }}>
         {authLinks.map((link) => (
           <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
@@ -116,10 +141,23 @@ export default function Navbar() {
                 if (link.action) link.action();
                 else navigate(link.to);
               }}
-              sx={{ borderRadius: 10, py: 1.2 }}
+              sx={{
+                borderRadius: 10,
+                py: 1.2,
+                "&:hover": {
+                  backgroundColor: link.text === "Logout" ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.05)",
+                },
+              }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>{link.icon}</ListItemIcon>
-              <ListItemText primary={link.text} primaryTypographyProps={{ fontSize: "0.9375rem", fontWeight: 400 }} />
+              <ListItemIcon sx={{ minWidth: 36, color: link.text === "Logout" ? "#ef4444" : "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemText
+                primary={link.text}
+                primaryTypographyProps={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 400,
+                  color: link.text === "Logout" ? "#ef4444" : "text.primary",
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -159,21 +197,42 @@ export default function Navbar() {
 
           {!isMobile && (
             <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-              {navLinks.map((link) => (
-                <Button
-                  key={link.text}
-                  component={Link}
-                  to={link.to}
-                  sx={{
-                    color: "text.secondary",
-                    fontSize: "0.8125rem",
-                    px: 1.5,
-                    "&:hover": { color: "text.primary", backgroundColor: "transparent" },
-                  }}
-                >
-                  {link.text}
-                </Button>
-              ))}
+              {navLinks.map((link) => {
+                const active = isActive(link.to);
+                return (
+                  <Button
+                    key={link.text}
+                    component={Link}
+                    to={link.to}
+                    sx={{
+                      color: active ? "#0071e3" : "text.secondary",
+                      fontSize: "0.8125rem",
+                      px: 1.5,
+                      position: "relative",
+                      fontWeight: active ? 500 : 400,
+                      "&:hover": {
+                        color: active ? "#0071e3" : "text.primary",
+                        backgroundColor: "transparent",
+                      },
+                      "&::after": active
+                        ? {
+                            content: '""',
+                            position: "absolute",
+                            bottom: -2,
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: 16,
+                            height: 2,
+                            borderRadius: 980,
+                            backgroundColor: "#0071e3",
+                          }
+                        : {},
+                    }}
+                  >
+                    {link.text}
+                  </Button>
+                );
+              })}
             </Box>
           )}
 
@@ -181,9 +240,20 @@ export default function Navbar() {
             <IconButton
               component={Link}
               to="/cart"
-              sx={{ color: "text.secondary", "&:hover": { color: "text.primary" } }}
+              sx={{
+                color: "text.secondary",
+                "&:hover": { color: "text.primary" },
+              }}
             >
-              <Badge badgeContent={cartCount} color="primary">
+              <Badge
+                badgeContent={cartCount}
+                color="primary"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    animation: cartAnimating ? "pulse 0.3s ease" : "none",
+                  },
+                }}
+              >
                 <ShoppingCartIcon fontSize="small" />
               </Badge>
             </IconButton>
@@ -194,7 +264,14 @@ export default function Navbar() {
                   variant="text"
                   size="small"
                   onClick={logout}
-                  sx={{ color: "text.secondary", fontSize: "0.8125rem", "&:hover": { color: "text.primary" } }}
+                  sx={{
+                    color: "text.secondary",
+                    fontSize: "0.8125rem",
+                    "&:hover": {
+                      color: "#ef4444",
+                      backgroundColor: "rgba(239,68,68,0.08)",
+                    },
+                  }}
                 >
                   Logout
                 </Button>
@@ -203,7 +280,11 @@ export default function Navbar() {
                   <Button
                     component={Link}
                     to="/Login"
-                    sx={{ color: "text.secondary", fontSize: "0.8125rem", "&:hover": { color: "text.primary" } }}
+                    sx={{
+                      color: isActive("/Login") ? "#0071e3" : "text.secondary",
+                      fontSize: "0.8125rem",
+                      "&:hover": { color: "#0071e3" },
+                    }}
                   >
                     Login
                   </Button>

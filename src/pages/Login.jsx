@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
-import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -51,12 +50,24 @@ export default function Login() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 400 }}>
+        {/* Apple blue accent line */}
+        <Box
+          sx={{
+            width: 40,
+            height: 3,
+            borderRadius: 980,
+            backgroundColor: "#0071e3",
+            mx: "auto",
+            mb: 3,
+          }}
+        />
+
         <Typography
-          variant="h2"
+          variant="h1"
           sx={{
             fontWeight: 600,
             letterSpacing: "-0.03em",
-            fontSize: { xs: "1.75rem", md: "2.25rem" },
+            fontSize: { xs: "1.75rem", md: "2.5rem" },
             mb: 1,
             textAlign: "center",
           }}
@@ -101,6 +112,13 @@ export default function Login() {
             size="large"
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{
+              py: 1.5,
+              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+              "&:hover": {
+                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+              },
+            }}
           >
             {submitting ? "Signing in..." : "Sign In"}
           </Button>
@@ -108,7 +126,17 @@ export default function Login() {
 
         <Typography variant="body2" sx={{ mt: 4, textAlign: "center", color: "text.secondary" }}>
           Don't have an account?{" "}
-          <Link to="/SignUp" style={{ color: "#0071e3", fontWeight: 500 }}>
+          <Link
+            to="/SignUp"
+            style={{
+              color: "#0071e3",
+              fontWeight: 500,
+              textDecoration: "none",
+              transition: "opacity 0.15s",
+            }}
+            onMouseEnter={(e) => e.target.style.opacity = "0.7"}
+            onMouseLeave={(e) => e.target.style.opacity = "1"}
+          >
             Create one
           </Link>
         </Typography>

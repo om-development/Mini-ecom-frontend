@@ -9,8 +9,10 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -20,6 +22,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+  const [imgError, setImgError] = useState(false);
 
   const loadProduct = async () => {
     try {
@@ -69,6 +72,13 @@ export default function ProductDetail() {
 
   if (!product) return null;
 
+  const stockStatus =
+    product.stock === 0
+      ? { color: "#ef4444", text: "Out of stock" }
+      : product.stock < 5
+        ? { color: "#f59e0b", text: `Only ${product.stock} left in stock` }
+        : null;
+
   return (
     <Box>
       {/* Back button */}
@@ -76,7 +86,10 @@ export default function ProductDetail() {
         <Button
           startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
           onClick={() => navigate(-1)}
-          sx={{ color: "text.secondary" }}
+          sx={{
+            color: "text.secondary",
+            "&:hover": { color: "text.primary", backgroundColor: "rgba(255,255,255,0.05)" },
+          }}
         >
           Back
         </Button>
@@ -91,65 +104,112 @@ export default function ProductDetail() {
           px: { xs: 3, md: 6 },
         }}
       >
-        <Box
-          component="img"
-          src={product.image}
-          alt={product.title}
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: { xs: "16px", md: "24px" },
-          }}
-        />
+        {imgError ? (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              borderRadius: { xs: "16px", md: "24px" },
+              background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Inventory2OutlinedIcon sx={{ fontSize: 64, color: "rgba(255,255,255,0.08)" }} />
+          </Box>
+        ) : (
+          <Box
+            component="img"
+            src={product.image}
+            alt={product.title}
+            onError={() => setImgError(true)}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: { xs: "16px", md: "24px" },
+              boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+            }}
+          />
+        )}
       </Box>
 
       {/* Content below image */}
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-        <Box sx={{ maxWidth: 520 }}>
-          <Typography
+        <Box sx={{ maxWidth: 560 }}>
+          {/* Category pill */}
+          <Box
             sx={{
-              color: "text.secondary",
-              fontSize: "0.7rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              mb: 1,
+              display: "inline-block",
+              backgroundColor: "rgba(255,255,255,0.06)",
+              borderRadius: 980,
+              px: 1.5,
+              py: 0.5,
+              mb: 2,
             }}
           >
-            {product.category}
-          </Typography>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                fontSize: "0.7rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              {product.category}
+            </Typography>
+          </Box>
+
+          {/* Title */}
           <Typography
-            variant="h3"
+            variant="h2"
             sx={{
-              fontWeight: 500,
-              letterSpacing: "-0.02em",
+              fontWeight: 600,
+              letterSpacing: "-0.03em",
               fontSize: { xs: "1.5rem", md: "2rem" },
               mb: 1.5,
+              lineHeight: 1.2,
             }}
           >
             {product.title}
           </Typography>
+
+          {/* Price — Apple blue */}
           <Typography
             sx={{
               fontWeight: 600,
-              fontSize: "1.5rem",
-              mb: 3,
+              fontSize: { xs: "1.5rem", md: "1.75rem" },
+              color: "#0071e3",
+              mb: 2,
+              letterSpacing: "-0.01em",
             }}
           >
             ${product.price.toFixed(2)}
           </Typography>
 
-          {product.stock < 5 && product.stock > 0 && (
-            <Typography sx={{ color: "warning.main", fontSize: "0.8125rem", mb: 2 }}>
-              Only {product.stock} left in stock
-            </Typography>
-          )}
-          {product.stock === 0 && (
-            <Typography sx={{ color: "error.main", fontSize: "0.8125rem", mb: 2 }}>
-              Out of stock
-            </Typography>
+          {/* Stock status */}
+          {stockStatus && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 2 }}>
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  backgroundColor: stockStatus.color,
+                  flexShrink: 0,
+                }}
+              />
+              <Typography sx={{ color: stockStatus.color, fontSize: "0.8125rem", fontWeight: 500 }}>
+                {stockStatus.text}
+              </Typography>
+            </Box>
           )}
 
+          <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.06)" }} />
+
+          {/* Description */}
           <Typography
             sx={{
               color: "text.secondary",
@@ -161,6 +221,7 @@ export default function ProductDetail() {
             {product.description}
           </Typography>
 
+          {/* Add to Cart */}
           <Button
             variant="contained"
             size="large"
@@ -168,7 +229,16 @@ export default function ProductDetail() {
             disabled={product.stock === 0}
             onClick={addToCart}
             startIcon={<AddShoppingCartIcon />}
-            sx={{ py: 1.5, maxWidth: 320 }}
+            sx={{
+              py: 1.75,
+              maxWidth: 360,
+              fontSize: "1rem",
+              fontWeight: 500,
+              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+              "&:hover": {
+                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+              },
+            }}
           >
             Add to Cart
           </Button>

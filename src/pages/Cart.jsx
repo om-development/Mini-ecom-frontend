@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
+import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
@@ -78,12 +79,17 @@ export default function Cart() {
   if (!cart || cart.items.length === 0) {
     return (
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-        <Box textAlign="center" py={12}>
-          <ShoppingBagOutlinedIcon sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
-          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 3 }}>
+        <Box textAlign="center" py={14}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "text.disabled", mb: 3 }} />
+          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 1 }}>
             Your cart is empty
           </Typography>
-          <Button variant="contained" component={Link} to="/">Start Shopping</Button>
+          <Typography variant="body2" sx={{ color: "text.disabled", mb: 3 }}>
+            Add some items to get started
+          </Typography>
+          <Button variant="contained" component={Link} to="/">
+            Start Shopping
+          </Button>
         </Box>
       </Container>
     );
@@ -115,10 +121,14 @@ export default function Cart() {
                 gap: 2.5,
                 p: 2,
                 borderRadius: "16px",
-                backgroundColor: "rgba(255,255,255,0.02)",
-                border: "0.5px solid rgba(255,255,255,0.06)",
-                transition: "border-color 0.2s",
-                "&:hover": { borderColor: "rgba(255,255,255,0.12)" },
+                border: "1px solid rgba(255,255,255,0.08)",
+                backgroundColor: "#0a0a0a",
+                transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                "&:hover": {
+                  borderColor: "rgba(255,255,255,0.15)",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                  transform: "translateY(-1px)",
+                },
               }}
             >
               <Box
@@ -131,6 +141,7 @@ export default function Cart() {
                   objectFit: "cover",
                   borderRadius: "12px",
                   flexShrink: 0,
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
                 }}
               />
               <Box flex={1} display="flex" flexDirection="column" justifyContent="space-between" minWidth={0}>
@@ -148,7 +159,7 @@ export default function Cart() {
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      border: "0.5px solid rgba(255,255,255,0.12)",
+                      border: "1px solid rgba(255,255,255,0.1)",
                       borderRadius: 980,
                       overflow: "hidden",
                     }}
@@ -157,27 +168,49 @@ export default function Cart() {
                       size="small"
                       onClick={() => updateQty(item.productId._id, item.quantity - 1)}
                       sx={{
-                        width: 32,
-                        height: 32,
+                        width: 34,
+                        height: 34,
                         borderRadius: 0,
                         color: "text.secondary",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.06)" },
+                        transition: "all 0.15s ease",
+                        "&:hover": {
+                          backgroundColor: "rgba(255,255,255,0.08)",
+                          color: "text.primary",
+                        },
+                        "&:active": {
+                          transform: "scale(0.9)",
+                        },
                       }}
                     >
                       <RemoveIcon sx={{ fontSize: 14 }} />
                     </IconButton>
-                    <Typography sx={{ fontWeight: 500, fontSize: "0.8125rem", minWidth: 32, textAlign: "center" }}>
+                    <Typography
+                      sx={{
+                        fontWeight: 500,
+                        fontSize: "0.8125rem",
+                        minWidth: 36,
+                        textAlign: "center",
+                        userSelect: "none",
+                      }}
+                    >
                       {item.quantity}
                     </Typography>
                     <IconButton
                       size="small"
                       onClick={() => updateQty(item.productId._id, item.quantity + 1)}
                       sx={{
-                        width: 32,
-                        height: 32,
+                        width: 34,
+                        height: 34,
                         borderRadius: 0,
                         color: "text.secondary",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.06)" },
+                        transition: "all 0.15s ease",
+                        "&:hover": {
+                          backgroundColor: "rgba(255,255,255,0.08)",
+                          color: "text.primary",
+                        },
+                        "&:active": {
+                          transform: "scale(0.9)",
+                        },
                       }}
                     >
                       <AddIcon sx={{ fontSize: 14 }} />
@@ -193,7 +226,14 @@ export default function Cart() {
                       onClick={() => removeItem(item.productId._id)}
                       sx={{
                         color: "text.disabled",
-                        "&:hover": { color: "error.main" },
+                        transition: "all 0.15s ease",
+                        "&:hover": {
+                          color: "#ef4444",
+                          backgroundColor: "rgba(239,68,68,0.1)",
+                        },
+                        "&:active": {
+                          transform: "scale(0.9)",
+                        },
                       }}
                     >
                       <DeleteOutlinedIcon sx={{ fontSize: 18 }} />
@@ -210,8 +250,8 @@ export default function Cart() {
           sx={{
             p: 3,
             borderRadius: "16px",
-            backgroundColor: "rgba(255,255,255,0.02)",
-            border: "0.5px solid rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: "#0a0a0a",
             position: "sticky",
             top: 72,
           }}
@@ -227,12 +267,12 @@ export default function Cart() {
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
-            <Typography variant="body2" sx={{ color: "success.main" }}>Free</Typography>
+            <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 500 }}>Free</Typography>
           </Box>
-          <Box sx={{ my: 2, height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
+          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.06)" }} />
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
             <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>
               ${(total + tax).toFixed(2)}
             </Typography>
           </Box>
@@ -241,6 +281,13 @@ export default function Cart() {
             variant="contained"
             size="large"
             onClick={() => navigate("/checkout-address")}
+            sx={{
+              py: 1.5,
+              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+              "&:hover": {
+                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+              },
+            }}
           >
             Continue
           </Button>

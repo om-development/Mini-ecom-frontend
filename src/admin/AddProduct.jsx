@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -43,14 +42,23 @@ export default function AddProduct() {
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-      <Typography variant="h3" sx={{ mb: 1 }}>Add Product</Typography>
+      <Typography variant="h2" sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.5rem", md: "2rem" }, mb: 0.5 }}>
+        Add Product
+      </Typography>
       <Typography variant="body1" sx={{ color: "text.secondary", mb: 4 }}>
         Add a new item to your store
       </Typography>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Paper sx={{ p: { xs: 3, md: 4 } }}>
+      <Box
+        sx={{
+          p: { xs: 3, md: 4 },
+          borderRadius: "16px",
+          border: "1px solid rgba(255,255,255,0.08)",
+          backgroundColor: "#0a0a0a",
+        }}
+      >
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
@@ -79,12 +87,19 @@ export default function AddProduct() {
             size="large"
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{ mt: 4 }}
+            sx={{
+              mt: 4,
+              py: 1.5,
+              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+              "&:hover": {
+                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+              },
+            }}
           >
             {submitting ? "Adding..." : "Add Product"}
           </Button>
         </Box>
-      </Paper>
+      </Box>
     </Container>
   );
 }

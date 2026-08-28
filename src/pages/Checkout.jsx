@@ -6,12 +6,12 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
+import Divider from "@mui/material/Divider";
 
 export default function Checkout() {
   const { user } = useAuth();
@@ -98,7 +98,7 @@ export default function Checkout() {
       <Button
         component={Link}
         to="/cart"
-        sx={{ mb: 3, color: "text.secondary" }}
+        sx={{ mb: 3, color: "text.secondary", "&:hover": { color: "text.primary" } }}
         size="small"
       >
         &larr; Back to Cart
@@ -117,7 +117,7 @@ export default function Checkout() {
           {/* Address Section */}
           <Box sx={{ mb: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-              <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 500 }}>
                 Delivery Address
               </Typography>
               <Button size="small" onClick={() => navigate("/checkout-address")} sx={{ color: "#0071e3", fontSize: "0.8125rem" }}>
@@ -129,8 +129,9 @@ export default function Checkout() {
                 sx={{
                   p: 2.5,
                   borderRadius: "12px",
-                  backgroundColor: "rgba(255,255,255,0.02)",
-                  border: "0.5px solid rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  borderLeft: "3px solid #0071e3",
+                  backgroundColor: "#0a0a0a",
                 }}
               >
                 <Typography sx={{ fontWeight: 500, mb: 0.25 }}>{address.fullName}</Typography>
@@ -147,7 +148,7 @@ export default function Checkout() {
 
           {/* Items Section */}
           <Box sx={{ mb: 4 }}>
-            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
+            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2, fontWeight: 500 }}>
               Items
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
@@ -159,15 +160,15 @@ export default function Checkout() {
                     gap: 2,
                     p: 2,
                     borderRadius: "12px",
-                    backgroundColor: "rgba(255,255,255,0.02)",
-                    border: "0.5px solid rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    backgroundColor: "#0a0a0a",
                   }}
                 >
                   <Box
                     component="img"
                     src={item.productId.image}
                     alt={item.productId.title}
-                    sx={{ width: 56, height: 56, objectFit: "cover", borderRadius: "10px", flexShrink: 0 }}
+                    sx={{ width: 56, height: 56, objectFit: "cover", borderRadius: "10px", flexShrink: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
                   />
                   <Box flex={1} display="flex" justifyContent="space-between" alignItems="center">
                     <Box>
@@ -187,11 +188,11 @@ export default function Checkout() {
 
           {/* Payment Section */}
           <Box>
-            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2 }}>
+            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2, fontWeight: 500 }}>
               Payment Method
             </Typography>
             <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 {[
                   { value: "card", label: "Credit / Debit Card" },
                   { value: "upi", label: "UPI" },
@@ -205,12 +206,22 @@ export default function Checkout() {
                     label={option.label}
                     sx={{
                       m: 0,
-                      py: 1,
+                      py: 1.25,
                       px: 2,
-                      borderRadius: "10px",
-                      border: paymentMethod === option.value ? "1px solid rgba(0,113,227,0.4)" : "0.5px solid rgba(255,255,255,0.06)",
-                      backgroundColor: paymentMethod === option.value ? "rgba(0,113,227,0.06)" : "transparent",
-                      transition: "all 0.15s",
+                      borderRadius: "12px",
+                      border: paymentMethod === option.value
+                        ? "1px solid rgba(0,113,227,0.5)"
+                        : "1px solid rgba(255,255,255,0.08)",
+                      backgroundColor: paymentMethod === option.value
+                        ? "rgba(0,113,227,0.08)"
+                        : "transparent",
+                      transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      cursor: "pointer",
+                      "&:hover": {
+                        borderColor: paymentMethod === option.value
+                          ? "rgba(0,113,227,0.5)"
+                          : "rgba(255,255,255,0.15)",
+                      },
                     }}
                   />
                 ))}
@@ -224,8 +235,8 @@ export default function Checkout() {
           sx={{
             p: 3,
             borderRadius: "16px",
-            backgroundColor: "rgba(255,255,255,0.02)",
-            border: "0.5px solid rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: "#0a0a0a",
             position: "sticky",
             top: 72,
           }}
@@ -241,12 +252,12 @@ export default function Checkout() {
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
-            <Typography variant="body2" sx={{ color: "success.main" }}>Free</Typography>
+            <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 500 }}>Free</Typography>
           </Box>
-          <Box sx={{ my: 2, height: 1, backgroundColor: "rgba(255,255,255,0.06)" }} />
+          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.06)" }} />
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
             <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>${total.toFixed(2)}</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>${total.toFixed(2)}</Typography>
           </Box>
           <Button
             fullWidth
@@ -255,6 +266,13 @@ export default function Checkout() {
             onClick={handlePlaceOrder}
             disabled={loading || !address}
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{
+              py: 1.5,
+              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+              "&:hover": {
+                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+              },
+            }}
           >
             {loading ? "Placing order..." : "Place Order"}
           </Button>

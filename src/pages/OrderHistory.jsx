@@ -15,12 +15,12 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 
-const statusColors = {
-  Placed: "#ff9f0a",
-  Processing: "#5ac8fa",
-  Shipped: "#0071e3",
-  Delivered: "#34c759",
-  Cancelled: "#ff3b30",
+const statusConfig = {
+  Placed: { color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+  Processing: { color: "#5ac8fa", bg: "rgba(90,200,250,0.1)" },
+  Shipped: { color: "#0071e3", bg: "rgba(0,113,227,0.1)" },
+  Delivered: { color: "#10b981", bg: "rgba(16,185,129,0.1)" },
+  Cancelled: { color: "#ef4444", bg: "rgba(239,68,68,0.1)" },
 };
 
 export default function OrderHistory() {
@@ -78,94 +78,138 @@ export default function OrderHistory() {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {orders.length === 0 ? (
-        <Box textAlign="center" py={12}>
-          <ShoppingBagOutlinedIcon sx={{ fontSize: 64, color: "text.disabled", mb: 2 }} />
-          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 3 }}>
+        <Box textAlign="center" py={14}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "text.disabled", mb: 3 }} />
+          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 1 }}>
             No orders yet
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.disabled", mb: 3 }}>
+            Your order history will appear here
           </Typography>
           <Button variant="contained" component={Link} to="/">Start Shopping</Button>
         </Box>
       ) : (
-        <Box>
-          {orders.map((order, index) => (
-            <Box key={order._id}>
-              {index > 0 && (
-                <Box sx={{ height: 1, backgroundColor: "rgba(255,255,255,0.06)", mx: 0 }} />
-              )}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+          {orders.map((order) => {
+            const status = statusConfig[order.status] || { color: "#666", bg: "rgba(255,255,255,0.05)" };
+            return (
               <Box
+                key={order._id}
                 component={Link}
                 to={`/order-success/${order._id}`}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 2,
-                  py: 2.5,
+                  gap: 2.5,
+                  p: 2.5,
+                  borderRadius: "16px",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  backgroundColor: "#0a0a0a",
                   textDecoration: "none",
-                  transition: "background-color 0.15s",
-                  "&:hover": { backgroundColor: "rgba(255,255,255,0.02)" },
-                  mx: -2,
-                  px: 2,
-                  borderRadius: "12px",
+                  transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  "&:hover": {
+                    borderColor: "rgba(255,255,255,0.15)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+                    transform: "translateY(-2px)",
+                  },
                 }}
               >
-                {/* Status Dot */}
+                {/* Status Dot + Label */}
                 <Box
                   sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    backgroundColor: statusColors[order.status] || "#666",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    minWidth: 120,
                     flexShrink: 0,
                   }}
-                />
+                >
+                  <Box
+                    sx={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      backgroundColor: status.color,
+                      boxShadow: `0 0 8px ${status.color}40`,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      px: 1.25,
+                      py: 0.25,
+                      borderRadius: 980,
+                      backgroundColor: status.bg,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "0.7rem",
+                        fontWeight: 500,
+                        color: status.color,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.03em",
+                      }}
+                    >
+                      {order.status}
+                    </Typography>
+                  </Box>
+                </Box>
 
                 {/* Order Info */}
                 <Box flex={1} minWidth={0}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem" }}>
-                      {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                      · {new Date(order.createdAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
+                  <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem" }}>
+                    {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
+                  </Typography>
                   <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.25 }}>
-                    {order.paymentMethod?.toUpperCase()}
+                    {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </Typography>
                 </Box>
 
-                {/* Right side */}
+                {/* Admin: Status Dropdown */}
+                {isAdmin && (
+                  <FormControl size="small" sx={{ minWidth: 140 }} onClick={(e) => e.preventDefault()}>
+                    <InputLabel sx={{ fontSize: "0.8125rem" }}>Status</InputLabel>
+                    <Select
+                      value={order.status}
+                      label="Status"
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleStatusChange(order._id, e.target.value);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      size="small"
+                      sx={{ fontSize: "0.8125rem", borderRadius: 980 }}
+                    >
+                      {statuses.map((s) => (
+                        <MenuItem key={s} value={s} sx={{ fontSize: "0.875rem" }}>{s}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+
+                {/* Total + View */}
                 <Box display="flex" alignItems="center" gap={2} flexShrink={0}>
-                  {isAdmin ? (
-                    <FormControl size="small" sx={{ minWidth: 130 }} onClick={(e) => e.preventDefault()}>
-                      <InputLabel>Status</InputLabel>
-                      <Select
-                        value={order.status}
-                        label="Status"
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          handleStatusChange(order._id, e.target.value);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        size="small"
-                      >
-                        {statuses.map((s) => (
-                          <MenuItem key={s} value={s}>{s}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <Typography variant="body2" sx={{ color: statusColors[order.status] || "text.secondary" }}>
-                      {order.status}
-                    </Typography>
-                  )}
-                  <Typography sx={{ fontWeight: 600, fontSize: "0.9375rem" }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: "1.125rem", color: "#0071e3" }}>
                     ${order.totalAmount?.toFixed(2)}
                   </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      fontSize: "0.75rem",
+                      py: 0.5,
+                      px: 1.5,
+                      minWidth: "auto",
+                    }}
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    View
+                  </Button>
                 </Box>
               </Box>
-            </Box>
-          ))}
+            );
+          })}
         </Box>
       )}
 

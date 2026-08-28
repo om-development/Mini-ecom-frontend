@@ -98,7 +98,11 @@ export default function CheckoutAddress() {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {previousAddresses.length > 0 && (
-        <Button variant="outlined" onClick={() => setShowModal(true)} sx={{ mb: 3 }}>
+        <Button
+          variant="outlined"
+          onClick={() => setShowModal(true)}
+          sx={{ mb: 3 }}
+        >
           Use a previous address
         </Button>
       )}
@@ -109,28 +113,74 @@ export default function CheckoutAddress() {
         sx={{
           p: { xs: 3, md: 4 },
           borderRadius: "16px",
-          backgroundColor: "rgba(255,255,255,0.02)",
-          border: "0.5px solid rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          backgroundColor: "#0a0a0a",
         }}
       >
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField fullWidth label="Full Name" name="fullName" value={form.fullName} onChange={handleChange} required />
+            <TextField
+              fullWidth
+              label="Full Name"
+              name="fullName"
+              value={form.fullName}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField fullWidth label="Phone" name="phone" value={form.phone} onChange={handleChange} required inputProps={{ maxLength: 10 }} />
+            <TextField
+              fullWidth
+              label="Phone"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              required
+              inputProps={{ maxLength: 10, inputMode: "numeric" }}
+              helperText="10 digits"
+            />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <TextField fullWidth label="Address Line" name="addressLine" value={form.addressLine} onChange={handleChange} required />
+            <TextField
+              fullWidth
+              label="Address Line"
+              name="addressLine"
+              value={form.addressLine}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField fullWidth label="District" name="district" value={form.district} onChange={handleChange} required />
+            <TextField
+              fullWidth
+              label="District"
+              name="district"
+              value={form.district}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField fullWidth label="Province" name="province" value={form.province} onChange={handleChange} required />
+            <TextField
+              fullWidth
+              label="Province"
+              name="province"
+              value={form.province}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField fullWidth label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} required inputProps={{ maxLength: 6 }} />
+            <TextField
+              fullWidth
+              label="Pincode"
+              name="pincode"
+              value={form.pincode}
+              onChange={handleChange}
+              required
+              inputProps={{ maxLength: 6, inputMode: "numeric" }}
+              helperText="6 digits"
+            />
           </Grid>
         </Grid>
         <Button
@@ -140,14 +190,26 @@ export default function CheckoutAddress() {
           size="large"
           disabled={loading}
           startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
-          sx={{ mt: 4 }}
+          sx={{
+            mt: 4,
+            py: 1.5,
+            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
+            "&:hover": {
+              boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
+            },
+          }}
         >
           {loading ? "Saving..." : usedExisting ? "Continue" : "Save & Continue"}
         </Button>
       </Box>
 
-      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Select a Previous Address</DialogTitle>
+      <Dialog
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 500 }}>Select a Previous Address</DialogTitle>
         <DialogContent>
           <RadioGroup value={selectedAddressId} onChange={(e) => setSelectedAddressId(e.target.value)}>
             {previousAddresses.map((addr) => (
@@ -155,13 +217,22 @@ export default function CheckoutAddress() {
                 key={addr._id}
                 onClick={() => setSelectedAddressId(addr._id)}
                 sx={{
-                  p: 2,
+                  p: 2.5,
                   mb: 1,
                   borderRadius: "12px",
                   cursor: "pointer",
-                  border: selectedAddressId === addr._id ? "1px solid rgba(0,113,227,0.4)" : "0.5px solid rgba(255,255,255,0.06)",
-                  backgroundColor: selectedAddressId === addr._id ? "rgba(0,113,227,0.06)" : "transparent",
-                  transition: "all 0.15s",
+                  border: selectedAddressId === addr._id
+                    ? "1px solid rgba(0,113,227,0.5)"
+                    : "1px solid rgba(255,255,255,0.08)",
+                  backgroundColor: selectedAddressId === addr._id
+                    ? "rgba(0,113,227,0.08)"
+                    : "transparent",
+                  transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  "&:hover": {
+                    borderColor: selectedAddressId === addr._id
+                      ? "rgba(0,113,227,0.5)"
+                      : "rgba(255,255,255,0.15)",
+                  },
                 }}
               >
                 <FormControlLabel
@@ -179,7 +250,7 @@ export default function CheckoutAddress() {
             ))}
           </RadioGroup>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={() => setShowModal(false)} sx={{ color: "text.secondary" }}>Cancel</Button>
           <Button
             variant="contained"
