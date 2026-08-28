@@ -84,8 +84,13 @@ export default function Navbar() {
     <Box sx={{ width: 260 }} role="presentation">
       <Box sx={{ p: "20px 24px" }}>
         <Typography variant="h6" sx={{ fontWeight: 500, letterSpacing: "-0.02em" }}>
-          Mohit Store
+          OM-G
         </Typography>
+        {user && (
+          <Typography sx={{ color: "#6e6e73", fontSize: "0.8125rem", mt: 0.5 }}>
+            Welcome, {user.name}
+          </Typography>
+        )}
       </Box>
       <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
       <List sx={{ px: 1 }}>
@@ -176,8 +181,14 @@ export default function Navbar() {
               fontSize: "1.1rem",
             }}
           >
-            Mohit Store
+            OM-G
           </Typography>
+
+          {user && !isMobile && (
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.8125rem", mr: 1, whiteSpace: "nowrap" }}>
+              Welcome, {user.name}
+            </Typography>
+          )}
 
           {!isMobile && (
             <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>

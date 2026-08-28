@@ -192,6 +192,22 @@ const Home = () => {
             >
               {product.title}
             </Typography>
+            {product.description && (
+              <Typography
+                sx={{
+                  color: "rgba(255,255,255,0.7)",
+                  fontSize: "0.8125rem",
+                  lineHeight: 1.5,
+                  mb: 1,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {product.description}
+              </Typography>
+            )}
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography
                 sx={{
@@ -336,11 +352,27 @@ const Home = () => {
               color: "#0071e3",
               fontWeight: 600,
               fontSize: "1.25rem",
-              mb: 2,
+              mb: 1,
             }}
           >
             ${product.price.toFixed(2)}
           </Typography>
+          {product.description && (
+            <Typography
+              sx={{
+                color: "#6e6e73",
+                fontSize: "0.8125rem",
+                lineHeight: 1.5,
+                mb: 2,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {product.description}
+            </Typography>
+          )}
           <Button
             fullWidth
             variant="contained"
