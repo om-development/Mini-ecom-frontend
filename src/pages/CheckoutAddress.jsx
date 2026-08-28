@@ -62,7 +62,7 @@ export default function CheckoutAddress() {
     try {
       // Set this address as active in backend
       await api.post(`/address/set-active`, {
-        user?.id,
+        userId: user?.id,
         addressId: address._id,
       });
 
@@ -132,7 +132,7 @@ export default function CheckoutAddress() {
 
       await api.post(`/address/add`, {
         ...form,
-        user?.id,
+        userId: user?.id,
       });
 
       // Always navigate to checkout (whether new address or already exists)
