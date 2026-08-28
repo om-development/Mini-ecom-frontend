@@ -383,7 +383,7 @@ const Home = () => {
               mb: 2,
             }}
           >
-            ${product.price.toFixed(2)}
+            Rs {product.price.toFixed(2)}
           </Typography>
           <Button
             fullWidth
