@@ -1,17 +1,18 @@
 import { Link, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const { user, logout: authLogout } = useAuth();
   const [cartCount, setCartCount] = useState(0);
   const [cartTotal, setCartTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const userId = localStorage.getItem("userId");
 
   // Function to load cart data
   const loadCartData = async () => {
-    if (!userId) {
+    if (!user) {
       setCartCount(0);
       setCartTotal(0);
       return;
@@ -19,7 +20,7 @@ export default function Navbar() {
 
     try {
       setLoading(true);
-      const res = await api.get(`/cart/${userId}`);
+      const res = await api.get(`/cart/${user.id}`);
 
       // Your API returns { message, cart } where cart has items array
       const cart = res.data.cart;
@@ -55,7 +56,7 @@ export default function Navbar() {
   // Load cart on component mount
   useEffect(() => {
     loadCartData();
-  }, [userId]);
+  }, [user]);
 
   // Listen for cartUpdated event
   useEffect(() => {
@@ -63,13 +64,12 @@ export default function Navbar() {
     return () => {
       window.removeEventListener("cartUpdated", loadCartData);
     };
-  }, [userId]);
+  }, [user]);
 
-  const logout = () => {
-    localStorage.clear();
+  const logout = async () => {
+    await authLogout();
     setCartCount(0);
     setCartTotal(0);
-    navigate("/login");
   };
 
   return (
@@ -120,16 +120,16 @@ export default function Navbar() {
             </Link>
             {/* Auth Links */}
             <div className="flex gap-3 items-center">
-              {!userId ? (
+              {!user ? (
                 <>
                   <Link
-                    to="/login"
+                    to="/Login"
                     className="px-4 py-2 text-white hover:text-indigo-400 transition font-medium"
                   >
                     Login
                   </Link>
                   <Link
-                    to="/signup"
+                    to="/SignUp"
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition font-medium"
                   >
                     Signup

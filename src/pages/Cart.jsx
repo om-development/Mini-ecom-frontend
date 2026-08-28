@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { Link, Navigate, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function Cart() {
-  const userId = localStorage.getItem("userId");
+  const { user } = useAuth();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   // Load cart
   const loadCart = async () => {
-    if (!userId) {
+    if (!user) {
       setError("Please login to view cart");
       return;
     }
     try {
       setLoading(true);
       setError(null);
-      const res = await api.get(`/cart/${userId}`);
+      const res = await api.get(`/cart/${user.id}`);
       setCart(res.data.cart);
     } catch (err) {
       console.error("Error loading cart:", err);
@@ -29,12 +30,12 @@ export default function Cart() {
 
   useEffect(() => {
     loadCart();
-  }, [userId]);
+  }, [user]);
 
   // Remove item from cart
   const removeItem = async (productId) => {
     try {
-      await api.post(`/cart/remove`, { userId, productId });
+      await api.post(`/cart/remove`, { userId: user.id, productId });
       loadCart();
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
@@ -50,7 +51,7 @@ export default function Cart() {
       return;
     }
     try {
-      await api.post(`/cart/update`, { userId, productId, quantity });
+      await api.post(`/cart/update`, { userId: user.id, productId, quantity });
       loadCart();
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {

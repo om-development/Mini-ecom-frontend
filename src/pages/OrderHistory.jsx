@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function OrderHistory() {
-  const userId = localStorage.getItem("userId");
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,12 +15,12 @@ export default function OrderHistory() {
         setLoading(true);
         setError(null);
 
-        if (!userId) {
+        if (!user?.id) {
           setError("Please login to view order history");
           return;
         }
 
-        const res = await api.get(`/order/user/${userId}`);
+        const res = await api.get(`/order/user/${user?.id}`);
         setOrders(res.data.orders || []);
       } catch (err) {
         console.error("Error loading orders:", err);
@@ -30,7 +31,7 @@ export default function OrderHistory() {
     };
 
     loadOrders();
-  }, [userId]);
+  }, [user?.id]);
 
   if (loading) {
     return (

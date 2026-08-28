@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useParams, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,13 +29,12 @@ export default function ProductDetail() {
   // Add to cart function
   const addToCart = async (productId) => {
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
+      if (!user) {
         alert("Please login to add items to cart");
         return;
       }
 
-      const res = await api.post(`/cart/add`, { userId, productId });
+      const res = await api.post(`/cart/add`, { userId: user.id, productId });
 
       // Dispatch event to trigger navbar update
       window.dispatchEvent(new Event("cartUpdated"));

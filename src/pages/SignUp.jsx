@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignUp() {
   const [form, setForm] = useState({
@@ -10,6 +11,8 @@ export default function SignUp() {
   });
 
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setForm({
@@ -27,6 +30,11 @@ export default function SignUp() {
       const response = await api.post("/auth/signup", form);
       setMsg("User Registered Successfully");
       console.log("SUCCESS:", response.data);
+      
+      // Auto-login after signup (signup doesn't return token, so redirect to login)
+      setTimeout(() => {
+        navigate("/Login");
+      }, 1500);
     } catch (error) {
       setMsg(error.response?.data?.message || "Something is wrong");
     }

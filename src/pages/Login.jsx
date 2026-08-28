@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [form, setForm] = useState({
@@ -10,6 +11,7 @@ export default function Login() {
 
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -27,11 +29,8 @@ export default function Login() {
       setMsg("User logged in Successfully");
       console.log("SUCCESS:", response.data);
 
-      // Saving token to local storage (Temporary)
-
-      localStorage.setItem("token", response.data.token);
-      localStorage.removeItem("userId");
-      localStorage.setItem('userId',response.data.user.id)
+      // Use AuthContext login
+      login(response.data.user, response.data.token);
       setTimeout(() => {
         navigate("/");
       }, 1000);

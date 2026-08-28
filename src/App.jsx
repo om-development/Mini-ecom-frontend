@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,6 +12,9 @@ import Checkout from "./pages/Checkout";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderHistory from "./pages/OrderHistory";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/ProtectedRoute";
 
 function Layout() {
   return (
@@ -31,18 +33,32 @@ const router = createBrowserRouter([
       { path: "/Login", element: <Login /> },
       { path: "/SignUp", element: <SignUp /> },
       { path: "/product/:id", element: <ProductDetail /> },
-      { path: "/admin/product/add", element: <AddProduct /> },
-      { path: "/admin/product/list", element: <ProductList /> },
-      { path: "/admin/product/edit/:id", element: <EditProduct /> },
-      { path: "/cart", element: <Cart /> },
-      { path: "/checkout-address", element: <CheckoutAddress /> },
-      { path: "/checkout", element: <Checkout /> },
-      { path: "/order-success/:orderId", element: <OrderSuccess /> },
-      { path: "/orders", element: <OrderHistory /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: "/cart", element: <Cart /> },
+          { path: "/checkout-address", element: <CheckoutAddress /> },
+          { path: "/checkout", element: <Checkout /> },
+          { path: "/order-success/:orderId", element: <OrderSuccess /> },
+          { path: "/orders", element: <OrderHistory /> },
+        ],
+      },
+      {
+        element: <AdminRoute />,
+        children: [
+          { path: "/admin/product/add", element: <AddProduct /> },
+          { path: "/admin/product/list", element: <ProductList /> },
+          { path: "/admin/product/edit/:id", element: <EditProduct /> },
+        ],
+      },
     ],
   },
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }

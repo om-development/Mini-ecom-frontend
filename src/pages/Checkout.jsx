@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function Checkout() {
-  const userId = localStorage.getItem("userId");
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [address, setAddress] = useState(null);
   const [cart, setCart] = useState(null);
@@ -17,14 +18,14 @@ export default function Checkout() {
         setLoading(true);
         setError(null);
 
-        if (!userId) {
+        if (!user) {
           setError("Please login to checkout");
           return;
         }
 
         const [cartRes, addressRes] = await Promise.all([
-          api.get(`/cart/${userId}`),
-          api.get(`/address/${userId}`),
+          api.get(`/cart/${user.id}`),
+          api.get(`/address/${user.id}`),
         ]);
 
         setCart(cartRes.data.cart);
@@ -45,7 +46,7 @@ export default function Checkout() {
     };
 
     loadData();
-  }, [userId]);
+  }, [user]);
 
   const handlePlaceOrder = async () => {
     try {
@@ -59,7 +60,7 @@ export default function Checkout() {
 
       // Call order placement API
       const res = await api.post(`/order/place`, {
-        userId,
+        userId: user.id,
         address,
         paymentMethod,
       });

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function CheckoutAddress() {
-  const userId = localStorage.getItem("userId");
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
@@ -22,7 +23,7 @@ export default function CheckoutAddress() {
   useEffect(() => {
     const loadPreviousAddresses = async () => {
       try {
-        const res = await api.get(`/address/${userId}`);
+        const res = await api.get(`/address/${user?.id}`);
         console.log("Address Response:", res.data); // DEBUG
         if (Array.isArray(res.data.address)) {
           setPreviousAddresses(res.data.address);
@@ -34,10 +35,10 @@ export default function CheckoutAddress() {
       }
     };
 
-    if (userId) {
+    if (user?.id) {
       loadPreviousAddresses();
     }
-  }, [userId]);
+  }, [user?.id]);
 
   // Close modal on escape key
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function CheckoutAddress() {
     try {
       // Set this address as active in backend
       await api.post(`/address/set-active`, {
-        userId,
+        user?.id,
         addressId: address._id,
       });
 
@@ -131,7 +132,7 @@ export default function CheckoutAddress() {
 
       await api.post(`/address/add`, {
         ...form,
-        userId,
+        user?.id,
       });
 
       // Always navigate to checkout (whether new address or already exists)
@@ -145,7 +146,7 @@ export default function CheckoutAddress() {
     }
   };
 
-  if (!userId) {
+  if (!user?.id) {
     return (
       <div className="min-h-screen bg-[#0f172a] px-6 py-8 text-white">
         <div className="max-w-2xl mx-auto">
