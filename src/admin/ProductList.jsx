@@ -126,7 +126,7 @@ export default function ProductList() {
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "#6e6e73" }}>{product.category}</TableCell>
-                  <TableCell align="right">${product.price?.toFixed(2)}</TableCell>
+                  <TableCell align="right">Rs {product.price?.toFixed(2)}</TableCell>
                   <TableCell align="right">{product.stock}</TableCell>
                   <TableCell align="right">
                     <IconButton
