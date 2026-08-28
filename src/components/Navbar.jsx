@@ -110,8 +110,12 @@ export default function Navbar() {
           }}
         >
           <Toolbar sx={{ justifyContent: "space-between", px: 2, height: 52 }}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 500, letterSpacing: "-0.02em", fontSize: "1.1rem" }}>
+            <Box
+              component={Link}
+              to="/"
+              sx={{ textDecoration: "none", cursor: "pointer" }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 500, letterSpacing: "-0.02em", fontSize: "1.1rem", color: "#ededed" }}>
                 OM-G
               </Typography>
               {user && (

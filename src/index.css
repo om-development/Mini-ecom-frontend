@@ -10,6 +10,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 body {
@@ -19,6 +20,7 @@ body {
   background-color: #000000;
   color: #ededed;
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 ::selection {

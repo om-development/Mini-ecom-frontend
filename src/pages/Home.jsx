@@ -14,15 +14,16 @@ import Pagination from "@mui/material/Pagination";
 import Snackbar from "@mui/material/Snackbar";
 import InputAdornment from "@mui/material/InputAdornment";
 import Stack from "@mui/material/Stack";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
 import SearchIcon from "@mui/icons-material/Search";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 
 const ITEMS_PER_PAGE = 8;
-const MAX_VISIBLE_CATEGORIES = 4;
+const MAX_VISIBLE_CATEGORIES = 3;
 
 const Home = () => {
   const { user } = useAuth();
@@ -512,14 +513,10 @@ const Home = () => {
                     borderColor: "rgba(255,255,255,0.2)",
                     color: "#ededed",
                     whiteSpace: "nowrap",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
                     "&:hover": { borderColor: "rgba(255,255,255,0.4)" },
                   }}
                 >
                   +More
-                  <KeyboardArrowDownIcon sx={{ fontSize: 16 }} />
                 </Button>
               )}
             </Box>
@@ -592,81 +589,73 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* Category Drawer — bottom sheet */}
-      {showAllCategories && (
-        <Box
-          onClick={() => setShowAllCategories(false)}
-          sx={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "flex-end",
-            zIndex: 1300,
-          }}
-        >
-          <Box
-            onClick={(e) => e.stopPropagation()}
-            sx={{
-              width: "100%",
+      {/* Category Dialog — centered */}
+      <Dialog
+        open={showAllCategories}
+        onClose={() => setShowAllCategories(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
               backgroundColor: "#0a0a0a",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "16px 16px 0 0",
-              p: 3,
-              maxHeight: "60vh",
-              overflowY: "auto",
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>Categories</Typography>
-              <IconButton onClick={() => setShowAllCategories(false)} sx={{ color: "#6e6e73" }}>
-                <CloseIcon />
-              </IconButton>
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "16px",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+            },
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 3, pt: 2.5 }}>
+          <DialogTitle sx={{ p: 0, fontWeight: 600, fontSize: "1.125rem" }}>Categories</DialogTitle>
+          <IconButton onClick={() => setShowAllCategories(false)} sx={{ color: "#6e6e73" }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Box sx={{ px: 3, pb: 3, pt: 1 }}>
+          <Stack spacing={0.75}>
+            <Box
+              onClick={() => { handleCategory("All Categories"); setShowAllCategories(false); }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                p: "12px 16px",
+                borderRadius: "12px",
+                backgroundColor: (category === "All Categories" || !category) ? "rgba(0,113,227,0.1)" : "transparent",
+                border: "1px solid rgba(255,255,255,0.08)",
+                cursor: "pointer",
+                transition: "all 150ms ease",
+                "&:hover": { backgroundColor: "rgba(0,113,227,0.05)", borderColor: "rgba(255,255,255,0.16)" },
+              }}
+            >
+              <Typography sx={{ color: "#ededed" }}>All</Typography>
+              {(category === "All Categories" || !category) && <CheckIcon sx={{ color: "#0071e3" }} />}
             </Box>
-            <Stack spacing={1}>
+            {categories.map((cat) => (
               <Box
-                onClick={() => { handleCategory("All Categories"); setShowAllCategories(false); }}
+                key={cat}
+                onClick={() => { handleCategory(cat); setShowAllCategories(false); }}
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
                   p: "12px 16px",
                   borderRadius: "12px",
-                  backgroundColor: (category === "All Categories" || !category) ? "rgba(0,113,227,0.1)" : "transparent",
+                  backgroundColor: category === cat ? "rgba(0,113,227,0.1)" : "transparent",
                   border: "1px solid rgba(255,255,255,0.08)",
                   cursor: "pointer",
                   transition: "all 150ms ease",
                   "&:hover": { backgroundColor: "rgba(0,113,227,0.05)", borderColor: "rgba(255,255,255,0.16)" },
                 }}
               >
-                <Typography sx={{ color: "#ededed" }}>All</Typography>
-                {(category === "All Categories" || !category) && <CheckIcon sx={{ color: "#0071e3" }} />}
+                <Typography sx={{ color: "#ededed" }}>{cat}</Typography>
+                {category === cat && <CheckIcon sx={{ color: "#0071e3" }} />}
               </Box>
-              {categories.map((cat) => (
-                <Box
-                  key={cat}
-                  onClick={() => { handleCategory(cat); setShowAllCategories(false); }}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    p: "12px 16px",
-                    borderRadius: "12px",
-                    backgroundColor: category === cat ? "rgba(0,113,227,0.1)" : "transparent",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    cursor: "pointer",
-                    transition: "all 150ms ease",
-                    "&:hover": { backgroundColor: "rgba(0,113,227,0.05)", borderColor: "rgba(255,255,255,0.16)" },
-                  }}
-                >
-                  <Typography sx={{ color: "#ededed" }}>{cat}</Typography>
-                  {category === cat && <CheckIcon sx={{ color: "#0071e3" }} />}
-                </Box>
-              ))}
-            </Stack>
-          </Box>
+            ))}
+          </Stack>
         </Box>
-      )}
+      </Dialog>
 
       <Snackbar
         open={toast.open}
