@@ -9,10 +9,16 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      const userId = localStorage.getItem("userId");
-      const role = localStorage.getItem("role");
-      if (userId) {
-        setUser({ id: userId, role });
+      try {
+        const res = await api.get("/auth/me");
+        const u = res.data.user;
+        setUser({ id: u._id, name: u.name, email: u.email, role: u.role });
+        localStorage.setItem("userId", u._id);
+        localStorage.setItem("role", u.role);
+      } catch {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("role");
+        setUser(null);
       }
       setLoading(false);
     };
