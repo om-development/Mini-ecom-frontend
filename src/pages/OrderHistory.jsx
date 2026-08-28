@@ -184,7 +184,7 @@ export default function OrderHistory() {
                 {/* Total + View */}
                 <Box display="flex" alignItems="center" gap={2} flexShrink={0}>
                   <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>
-                    ${order.totalAmount?.toFixed(2)}
+                    Rs {order.totalAmount?.toFixed(2)}
                   </Typography>
                   <Button
                     variant="outlined"

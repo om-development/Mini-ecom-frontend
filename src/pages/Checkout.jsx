@@ -174,11 +174,11 @@ export default function Checkout() {
                     <Box>
                       <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>{item.productId.title}</Typography>
                       <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>
-                        {item.quantity} x ${item.productId.price.toFixed(2)}
+                        {item.quantity} x Rs {item.productId.price.toFixed(2)}
                       </Typography>
                     </Box>
                     <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>
-                      ${(item.quantity * item.productId.price).toFixed(2)}
+                      Rs {(item.quantity * item.productId.price).toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>
@@ -244,11 +244,11 @@ export default function Checkout() {
           <Typography sx={{ fontWeight: 500, fontSize: "1.5rem", mb: 2.5 }}>Summary</Typography>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Subtotal</Typography>
-            <Typography sx={{ fontSize: "0.875rem" }}>${subtotal.toFixed(2)}</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>Rs {subtotal.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Tax (10%)</Typography>
-            <Typography sx={{ fontSize: "0.875rem" }}>${tax.toFixed(2)}</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>Rs {tax.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Shipping</Typography>
@@ -257,7 +257,7 @@ export default function Checkout() {
           <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.08)" }} />
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
             <Typography sx={{ fontWeight: 500, fontSize: "1.5rem" }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: "1.5rem" }}>${total.toFixed(2)}</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.5rem" }}>Rs {total.toFixed(2)}</Typography>
           </Box>
           <Button
             fullWidth

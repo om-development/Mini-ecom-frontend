@@ -149,7 +149,7 @@ export default function Cart() {
                     {item.productId.title}
                   </Typography>
                   <Typography variant="body2" sx={{ color: "#6e6e73", mt: 0.25 }}>
-                    ${item.productId.price.toFixed(2)} each
+                    Rs {item.productId.price.toFixed(2)} each
                   </Typography>
                 </Box>
                 <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -208,7 +208,7 @@ export default function Cart() {
 
                   <Box display="flex" alignItems="center" gap={2}>
                     <Typography sx={{ fontWeight: 600, fontSize: "1rem" }}>
-                      ${(item.productId.price * item.quantity).toFixed(2)}
+                      Rs {(item.productId.price * item.quantity).toFixed(2)}
                     </Typography>
                     <IconButton
                       size="small"
@@ -246,11 +246,11 @@ export default function Cart() {
           <Typography sx={{ fontWeight: 500, fontSize: "1.5rem", mb: 2.5 }}>Summary</Typography>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Subtotal</Typography>
-            <Typography sx={{ fontSize: "0.875rem" }}>${total.toFixed(2)}</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>Rs {total.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Tax (10%)</Typography>
-            <Typography sx={{ fontSize: "0.875rem" }}>${tax.toFixed(2)}</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>Rs {tax.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Shipping</Typography>
@@ -260,7 +260,7 @@ export default function Cart() {
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
             <Typography sx={{ fontWeight: 500, fontSize: "1.5rem" }}>Total</Typography>
             <Typography sx={{ fontWeight: 600, fontSize: "1.5rem" }}>
-              ${(total + tax).toFixed(2)}
+              Rs {(total + tax).toFixed(2)}
             </Typography>
           </Box>
           <Button

@@ -205,7 +205,7 @@ export default function ProductDetail() {
                 mb: 2,
               }}
             >
-              ${product.price.toFixed(2)}
+              Rs {product.price.toFixed(2)}
             </Typography>
 
             {/* Stock */}
@@ -306,7 +306,7 @@ export default function ProductDetail() {
             {/* Trust signals */}
             <Box sx={{ display: "flex", gap: 3 }}>
               {[
-                { label: "Free Shipping", sub: "On orders over $50" },
+                { label: "Free Shipping", sub: "On orders over Rs 50" },
                 { label: "Easy Returns", sub: "30 day return policy" },
                 { label: "Secure Checkout", sub: "SSL encrypted" },
               ].map((item) => (

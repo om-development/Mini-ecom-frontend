@@ -194,7 +194,7 @@ export default function OrderSuccess() {
           </Box>
           <Box>
             <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, color: "#0071e3" }}>${order.totalAmount?.toFixed(2)}</Typography>
+            <Typography sx={{ fontWeight: 600, color: "#0071e3" }}>Rs {order.totalAmount?.toFixed(2)}</Typography>
           </Box>
         </Box>
 
@@ -247,7 +247,7 @@ export default function OrderSuccess() {
 
                   {/* Price */}
                   <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem", flexShrink: 0 }}>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    Rs {(item.price * item.quantity).toFixed(2)}
                   </Typography>
                 </Box>
               </Box>
@@ -255,7 +255,7 @@ export default function OrderSuccess() {
             <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ px: 2.5, py: 1.75 }}>
               <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-              <Typography sx={{ fontWeight: 600, fontSize: "1.125rem", color: "#0071e3" }}>${order.totalAmount?.toFixed(2)}</Typography>
+              <Typography sx={{ fontWeight: 600, fontSize: "1.125rem", color: "#0071e3" }}>Rs {order.totalAmount?.toFixed(2)}</Typography>
             </Box>
           </Box>
         </Box>

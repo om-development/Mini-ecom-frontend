@@ -228,7 +228,7 @@ const Home = () => {
                   fontSize: "1.25rem",
                 }}
               >
-                ${product.price.toFixed(2)}
+                Rs {product.price.toFixed(2)}
               </Typography>
               <Box
                 className="hero-btn"
