@@ -45,7 +45,7 @@ export default function AddProduct() {
       <Typography variant="h2" sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.5rem", md: "2rem" }, mb: 0.5 }}>
         Add Product
       </Typography>
-      <Typography variant="body1" sx={{ color: "text.secondary", mb: 4 }}>
+      <Typography sx={{ color: "#6e6e73", mb: 4 }}>
         Add a new item to your store
       </Typography>
 
@@ -87,14 +87,7 @@ export default function AddProduct() {
             size="large"
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{
-              mt: 4,
-              py: 1.5,
-              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-              "&:hover": {
-                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-              },
-            }}
+            sx={{ mt: 4, py: 1.5 }}
           >
             {submitting ? "Adding..." : "Add Product"}
           </Button>

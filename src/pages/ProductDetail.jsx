@@ -6,11 +6,14 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
@@ -23,6 +26,7 @@ export default function ProductDetail() {
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
   const [imgError, setImgError] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const loadProduct = async () => {
     try {
@@ -43,9 +47,11 @@ export default function ProductDetail() {
       return;
     }
     try {
-      await api.post("/cart/add", { productId: id });
+      for (let i = 0; i < quantity; i++) {
+        await api.post("/cart/add", { productId: id });
+      }
       window.dispatchEvent(new Event("cartUpdated"));
-      setToast({ open: true, message: "Added to cart", severity: "success" });
+      setToast({ open: true, message: `${quantity} item${quantity > 1 ? "s" : ""} added to cart`, severity: "success" });
     } catch {
       setToast({ open: true, message: "Failed to add to cart", severity: "error" });
     }
@@ -77,7 +83,7 @@ export default function ProductDetail() {
       ? { color: "#ef4444", text: "Out of stock" }
       : product.stock < 5
         ? { color: "#f59e0b", text: `Only ${product.stock} left in stock` }
-        : null;
+        : { color: "#10b981", text: `${product.stock} in stock` };
 
   return (
     <Box>
@@ -86,16 +92,13 @@ export default function ProductDetail() {
         <Button
           startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
           onClick={() => navigate(-1)}
-          sx={{
-            color: "text.secondary",
-            "&:hover": { color: "text.primary", backgroundColor: "rgba(255,255,255,0.05)" },
-          }}
+          sx={{ color: "#6e6e73" }}
         >
           Back
         </Button>
       </Box>
 
-      {/* Full-bleed image */}
+      {/* Full-bleed image — 12px radius */}
       <Box
         sx={{
           width: "100%",
@@ -109,7 +112,7 @@ export default function ProductDetail() {
             sx={{
               width: "100%",
               height: "100%",
-              borderRadius: { xs: "16px", md: "24px" },
+              borderRadius: "12px",
               background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
               display: "flex",
               alignItems: "center",
@@ -128,121 +131,152 @@ export default function ProductDetail() {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              borderRadius: { xs: "16px", md: "24px" },
-              boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+              borderRadius: "12px",
             }}
           />
         )}
       </Box>
 
-      {/* Content below image */}
-      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-        <Box sx={{ maxWidth: 560 }}>
-          {/* Category pill */}
+      {/* Content — max-width 600px per spec */}
+      <Container maxWidth="sm" sx={{ py: { xs: 4, md: 6 } }}>
+        <Typography
+          sx={{
+            color: "#6e6e73",
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            mb: 1,
+          }}
+        >
+          {product.category}
+        </Typography>
+
+        <Typography
+          variant="h2"
+          sx={{
+            fontWeight: 600,
+            letterSpacing: "-0.03em",
+            fontSize: { xs: "1.5rem", md: "2rem" },
+            mb: 1.5,
+            lineHeight: 1.2,
+          }}
+        >
+          {product.title}
+        </Typography>
+
+        <Typography
+          sx={{
+            fontWeight: 600,
+            fontSize: "1.5rem",
+            color: "#0071e3",
+            mb: 2,
+          }}
+        >
+          ${product.price.toFixed(2)}
+        </Typography>
+
+        {/* Stock status */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 3 }}>
           <Box
             sx={{
-              display: "inline-block",
-              backgroundColor: "rgba(255,255,255,0.06)",
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              backgroundColor: stockStatus.color,
+              flexShrink: 0,
+            }}
+          />
+          <Typography sx={{ color: stockStatus.color, fontSize: "0.875rem", fontWeight: 500 }}>
+            {stockStatus.text}
+          </Typography>
+        </Box>
+
+        <Typography
+          sx={{
+            color: "#6e6e73",
+            lineHeight: 1.6,
+            mb: 4,
+            fontSize: "1rem",
+          }}
+        >
+          {product.description}
+        </Typography>
+
+        <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.08)" }} />
+
+        {/* Quantity stepper — pill shape per spec */}
+        <Box sx={{ mb: 3 }}>
+          <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em", mb: 1.5 }}>
+            Quantity
+          </Typography>
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              border: "1px solid rgba(255,255,255,0.2)",
               borderRadius: 980,
-              px: 1.5,
-              py: 0.5,
-              mb: 2,
+              overflow: "hidden",
             }}
           >
-            <Typography
+            <IconButton
+              size="small"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              disabled={quantity <= 1}
               sx={{
-                color: "text.secondary",
-                fontSize: "0.7rem",
-                fontWeight: 500,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                width: 40,
+                height: 40,
+                borderRadius: 0,
+                color: "#6e6e73",
+                transition: "all 150ms ease",
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                "&:active": { transform: "scale(0.92)" },
               }}
             >
-              {product.category}
+              <RemoveIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+            <Typography
+              sx={{
+                fontWeight: 500,
+                fontSize: "1rem",
+                minWidth: 48,
+                textAlign: "center",
+                userSelect: "none",
+              }}
+            >
+              {quantity}
             </Typography>
+            <IconButton
+              size="small"
+              onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+              disabled={quantity >= product.stock}
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 0,
+                color: "#6e6e73",
+                transition: "all 150ms ease",
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                "&:active": { transform: "scale(0.92)" },
+              }}
+            >
+              <AddIcon sx={{ fontSize: 16 }} />
+            </IconButton>
           </Box>
-
-          {/* Title */}
-          <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 600,
-              letterSpacing: "-0.03em",
-              fontSize: { xs: "1.5rem", md: "2rem" },
-              mb: 1.5,
-              lineHeight: 1.2,
-            }}
-          >
-            {product.title}
-          </Typography>
-
-          {/* Price — Apple blue */}
-          <Typography
-            sx={{
-              fontWeight: 600,
-              fontSize: { xs: "1.5rem", md: "1.75rem" },
-              color: "#0071e3",
-              mb: 2,
-              letterSpacing: "-0.01em",
-            }}
-          >
-            ${product.price.toFixed(2)}
-          </Typography>
-
-          {/* Stock status */}
-          {stockStatus && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  backgroundColor: stockStatus.color,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography sx={{ color: stockStatus.color, fontSize: "0.8125rem", fontWeight: 500 }}>
-                {stockStatus.text}
-              </Typography>
-            </Box>
-          )}
-
-          <Divider sx={{ my: 3, borderColor: "rgba(255,255,255,0.06)" }} />
-
-          {/* Description */}
-          <Typography
-            sx={{
-              color: "text.secondary",
-              lineHeight: 1.8,
-              mb: 4,
-              fontSize: "0.9375rem",
-            }}
-          >
-            {product.description}
-          </Typography>
-
-          {/* Add to Cart */}
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            disabled={product.stock === 0}
-            onClick={addToCart}
-            startIcon={<AddShoppingCartIcon />}
-            sx={{
-              py: 1.75,
-              maxWidth: 360,
-              fontSize: "1rem",
-              fontWeight: 500,
-              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-              "&:hover": {
-                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-              },
-            }}
-          >
-            Add to Cart
-          </Button>
         </Box>
+
+        {/* Add to Cart — full width, primary blue */}
+        <Button
+          variant="contained"
+          size="large"
+          fullWidth
+          disabled={product.stock === 0}
+          onClick={addToCart}
+          startIcon={<AddShoppingCartIcon />}
+          sx={{ py: 1.5 }}
+        >
+          Add to Cart
+        </Button>
       </Container>
 
       <Snackbar

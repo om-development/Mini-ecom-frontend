@@ -12,7 +12,6 @@ import Divider from "@mui/material/Divider";
 import Snackbar from "@mui/material/Snackbar";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -73,13 +72,7 @@ export default function OrderSuccess() {
     return (
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          component={Link}
-          to={isAdmin ? "/orders" : "/"}
-        >
-          Back
-        </Button>
+        <Button startIcon={<ArrowBackIcon />} component={Link} to={isAdmin ? "/orders" : "/"}>Back</Button>
       </Container>
     );
   }
@@ -90,23 +83,18 @@ export default function OrderSuccess() {
 
   return (
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-      {/* Back button for admin */}
       {isAdmin && (
         <Button
           startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
           component={Link}
           to="/orders"
-          sx={{
-            mb: 3,
-            color: "text.secondary",
-            "&:hover": { color: "text.primary", backgroundColor: "rgba(255,255,255,0.05)" },
-          }}
+          sx={{ mb: 3, color: "#6e6e73" }}
         >
           Back to Orders
         </Button>
       )}
 
-      {/* Success Header — different for admin vs user */}
+      {/* Header */}
       <Box
         textAlign="center"
         sx={{
@@ -118,16 +106,11 @@ export default function OrderSuccess() {
           <>
             <Typography
               variant="h2"
-              sx={{
-                fontWeight: 600,
-                letterSpacing: "-0.03em",
-                fontSize: { xs: "1.5rem", md: "2rem" },
-                mb: 0.5,
-              }}
+              sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.5rem", md: "2rem" }, mb: 0.5 }}
             >
               Order Details
             </Typography>
-            <Typography sx={{ color: "text.secondary" }}>
+            <Typography sx={{ color: "#6e6e73" }}>
               #{order._id?.slice(-8).toUpperCase()}
             </Typography>
           </>
@@ -144,16 +127,11 @@ export default function OrderSuccess() {
             />
             <Typography
               variant="h1"
-              sx={{
-                fontWeight: 600,
-                letterSpacing: "-0.03em",
-                fontSize: { xs: "1.75rem", md: "2.5rem" },
-                mb: 1,
-              }}
+              sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.5rem" }, mb: 1 }}
             >
               Order Confirmed
             </Typography>
-            <Typography sx={{ color: "text.secondary" }}>
+            <Typography sx={{ color: "#6e6e73" }}>
               #{order._id?.slice(-8).toUpperCase()}
             </Typography>
           </>
@@ -174,9 +152,8 @@ export default function OrderSuccess() {
             backgroundColor: "#0a0a0a",
           }}
         >
-          {/* Status — admin gets dropdown */}
           <Box>
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Status</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}>Status</Typography>
             {isAdmin ? (
               <FormControl size="small" fullWidth sx={{ mt: 0.5 }}>
                 <Select
@@ -184,14 +161,10 @@ export default function OrderSuccess() {
                   onChange={(e) => handleStatusChange(e.target.value)}
                   sx={{
                     borderRadius: 980,
-                    fontSize: "0.8125rem",
+                    fontSize: "0.875rem",
                     fontWeight: 500,
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(255,255,255,0.1)",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(255,255,255,0.2)",
-                    },
+                    "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.2)" },
+                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.3)" },
                   }}
                 >
                   {statuses.map((s) => (
@@ -201,78 +174,47 @@ export default function OrderSuccess() {
               </FormControl>
             ) : (
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mt: 0.5 }}>
-                <Box
-                  sx={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    backgroundColor: status.color,
-                    boxShadow: `0 0 8px ${status.color}40`,
-                    flexShrink: 0,
-                  }}
-                />
-                <Box
-                  sx={{
-                    px: 1.25,
-                    py: 0.25,
-                    borderRadius: 980,
-                    backgroundColor: status.bg,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: "0.75rem",
-                      fontWeight: 500,
-                      color: status.color,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
+                <Box sx={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: status.color, boxShadow: `0 0 8px ${status.color}40` }} />
+                <Box sx={{ px: 1.25, py: 0.25, borderRadius: 980, backgroundColor: status.bg }}>
+                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 500, color: status.color, textTransform: "uppercase", letterSpacing: "0.03em" }}>
                     {order.status}
                   </Typography>
                 </Box>
               </Box>
             )}
           </Box>
-
           <Box>
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Payment</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}>Payment</Typography>
             <Typography sx={{ fontWeight: 500 }}>{order.paymentMethod?.toUpperCase()}</Typography>
           </Box>
           <Box>
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Date</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}>Date</Typography>
             <Typography sx={{ fontWeight: 500 }}>{new Date(order.createdAt).toLocaleDateString()}</Typography>
           </Box>
           <Box>
-            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Total</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}>Total</Typography>
             <Typography sx={{ fontWeight: 600, color: "#0071e3" }}>${order.totalAmount?.toFixed(2)}</Typography>
           </Box>
         </Box>
 
         {/* Items */}
         <Box sx={{ mb: 4 }}>
-          <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2, fontWeight: 500 }}>
+          <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 2, fontWeight: 500 }}>
             Items
           </Typography>
-          <Box
-            sx={{
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "12px",
-              overflow: "hidden",
-            }}
-          >
+          <Box sx={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", overflow: "hidden" }}>
             {order.items?.map((item, i) => (
               <Box key={i}>
-                {i > 0 && <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />}
+                {i > 0 && <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />}
                 <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ px: 2.5, py: 1.75 }}>
-                  <Typography sx={{ color: "text.secondary" }}>
+                  <Typography sx={{ color: "#6e6e73" }}>
                     {item.title || "Product"} x {item.quantity}
                   </Typography>
                   <Typography sx={{ fontWeight: 500 }}>${(item.price * item.quantity).toFixed(2)}</Typography>
                 </Box>
               </Box>
             ))}
-            <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
+            <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ px: 2.5, py: 1.75 }}>
               <Typography sx={{ fontWeight: 500 }}>Total</Typography>
               <Typography sx={{ fontWeight: 600, fontSize: "1.125rem", color: "#0071e3" }}>${order.totalAmount?.toFixed(2)}</Typography>
@@ -283,27 +225,17 @@ export default function OrderSuccess() {
         {/* Address */}
         {order.address && (
           <Box>
-            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, fontWeight: 500 }}>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 1.5, fontWeight: 500 }}>
               Delivery Address
             </Typography>
-            <Box
-              sx={{
-                p: 2.5,
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.08)",
-                backgroundColor: "#0a0a0a",
-                borderLeft: "3px solid #0071e3",
-              }}
-            >
+            <Box sx={{ p: 2.5, borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", backgroundColor: "#0a0a0a", borderLeft: "3px solid #0071e3" }}>
               <Typography sx={{ fontWeight: 500 }}>{order.address.fullName}</Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>{order.address.addressLine}</Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>{order.address.addressLine}</Typography>
+              <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>
                 {order.address.district}, {order.address.province} {order.address.pincode}
               </Typography>
               {order.address.phone && (
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  Phone: {order.address.phone}
-                </Typography>
+                <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Phone: {order.address.phone}</Typography>
               )}
             </Box>
           </Box>
@@ -311,61 +243,21 @@ export default function OrderSuccess() {
       </Box>
 
       {/* Actions */}
-      <Box
-        display="flex"
-        gap={2}
-        justifyContent="center"
-        sx={{ animation: "fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both" }}
-      >
+      <Box display="flex" gap={2} justifyContent="center" sx={{ animation: "fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both" }}>
         {isAdmin ? (
           <>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/orders"
-              sx={{
-                boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-                "&:hover": {
-                  boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-                },
-              }}
-            >
-              Back to Orders
-            </Button>
-            <Button
-              variant="outlined"
-              component={Link}
-              to="/admin/product/list"
-            >
-              Manage Products
-            </Button>
+            <Button variant="contained" component={Link} to="/orders">Back to Orders</Button>
+            <Button variant="outlined" component={Link} to="/admin/product/list">Manage Products</Button>
           </>
         ) : (
           <>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/"
-              sx={{
-                boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-                "&:hover": {
-                  boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-                },
-              }}
-            >
-              Continue Shopping
-            </Button>
+            <Button variant="contained" component={Link} to="/">Continue Shopping</Button>
             <Button variant="outlined" component={Link} to="/orders">View Orders</Button>
           </>
         )}
       </Box>
 
-      <Snackbar
-        open={!!toast}
-        autoHideDuration={2500}
-        onClose={() => setToast(null)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
+      <Snackbar open={!!toast} autoHideDuration={2500} onClose={() => setToast(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={() => setToast(null)} severity={toast?.type} sx={{ width: "100%" }}>
           {toast?.msg}
         </Alert>

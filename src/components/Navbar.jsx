@@ -35,26 +35,14 @@ export default function Navbar() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [cartAnimating, setCartAnimating] = useState(false);
 
   const loadCartData = async () => {
-    if (!user) {
-      setCartCount(0);
-      return;
-    }
+    if (!user) { setCartCount(0); return; }
     try {
       const res = await api.get("/cart");
       const cart = res.data.cart;
-      if (!cart || !cart.items) {
-        setCartCount(0);
-        return;
-      }
-      const newCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-      if (newCount !== cartCount) {
-        setCartAnimating(true);
-        setTimeout(() => setCartAnimating(false), 300);
-      }
-      setCartCount(newCount);
+      if (!cart || !cart.items) { setCartCount(0); return; }
+      setCartCount(cart.items.reduce((sum, item) => sum + item.quantity, 0));
     } catch {
       setCartCount(0);
     }
@@ -64,7 +52,7 @@ export default function Navbar() {
   useEffect(() => {
     window.addEventListener("cartUpdated", loadCartData);
     return () => window.removeEventListener("cartUpdated", loadCartData);
-  }, [user, cartCount]);
+  }, [user]);
 
   const logout = async () => {
     await authLogout();
@@ -99,7 +87,7 @@ export default function Navbar() {
           Mohit Store
         </Typography>
       </Box>
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
       <List sx={{ px: 1 }}>
         {navLinks.map((link) => (
           <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
@@ -118,20 +106,20 @@ export default function Navbar() {
                 "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: isActive(link.to) ? "#0071e3" : "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36, color: isActive(link.to) ? "#0071e3" : "#6e6e73" }}>{link.icon}</ListItemIcon>
               <ListItemText
                 primary={link.text}
                 primaryTypographyProps={{
                   fontSize: "0.9375rem",
                   fontWeight: isActive(link.to) ? 500 : 400,
-                  color: isActive(link.to) ? "#0071e3" : "text.primary",
+                  color: isActive(link.to) ? "#0071e3" : "#ededed",
                 }}
               />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.06)" }} />
+      <Divider sx={{ borderColor: "rgba(255,255,255,0.08)" }} />
       <List sx={{ px: 1 }}>
         {authLinks.map((link) => (
           <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
@@ -149,13 +137,13 @@ export default function Navbar() {
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: link.text === "Logout" ? "#ef4444" : "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36, color: link.text === "Logout" ? "#ef4444" : "#6e6e73" }}>{link.icon}</ListItemIcon>
               <ListItemText
                 primary={link.text}
                 primaryTypographyProps={{
                   fontSize: "0.9375rem",
                   fontWeight: 400,
-                  color: link.text === "Logout" ? "#ef4444" : "text.primary",
+                  color: link.text === "Logout" ? "#ef4444" : "#ededed",
                 }}
               />
             </ListItemButton>
@@ -170,11 +158,7 @@ export default function Navbar() {
       <AppBar position="sticky">
         <Toolbar sx={{ px: { xs: 2, md: 4 }, height: 52 }}>
           {isMobile && (
-            <IconButton
-              edge="start"
-              onClick={() => setDrawerOpen(true)}
-              sx={{ mr: 1, color: "text.primary" }}
-            >
+            <IconButton edge="start" onClick={() => setDrawerOpen(true)} sx={{ mr: 1, color: "#ededed" }}>
               <MenuIcon fontSize="small" />
             </IconButton>
           )}
@@ -185,7 +169,7 @@ export default function Navbar() {
             to="/"
             sx={{
               flexGrow: 1,
-              color: "text.primary",
+              color: "#ededed",
               fontWeight: 500,
               textDecoration: "none",
               letterSpacing: "-0.02em",
@@ -205,15 +189,12 @@ export default function Navbar() {
                     component={Link}
                     to={link.to}
                     sx={{
-                      color: active ? "#0071e3" : "text.secondary",
-                      fontSize: "0.8125rem",
+                      color: active ? "#0071e3" : "#6e6e73",
+                      fontSize: "0.875rem",
                       px: 1.5,
-                      position: "relative",
                       fontWeight: active ? 500 : 400,
-                      "&:hover": {
-                        color: active ? "#0071e3" : "text.primary",
-                        backgroundColor: "transparent",
-                      },
+                      position: "relative",
+                      "&:hover": { color: active ? "#0071e3" : "#ededed", backgroundColor: "transparent" },
                       "&::after": active
                         ? {
                             content: '""',
@@ -240,20 +221,9 @@ export default function Navbar() {
             <IconButton
               component={Link}
               to="/cart"
-              sx={{
-                color: "text.secondary",
-                "&:hover": { color: "text.primary" },
-              }}
+              sx={{ color: "#6e6e73", "&:hover": { color: "#ededed" } }}
             >
-              <Badge
-                badgeContent={cartCount}
-                color="primary"
-                sx={{
-                  "& .MuiBadge-badge": {
-                    animation: cartAnimating ? "pulse 0.3s ease" : "none",
-                  },
-                }}
-              >
+              <Badge badgeContent={cartCount} color="primary">
                 <ShoppingCartIcon fontSize="small" />
               </Badge>
             </IconButton>
@@ -265,12 +235,9 @@ export default function Navbar() {
                   size="small"
                   onClick={logout}
                   sx={{
-                    color: "text.secondary",
-                    fontSize: "0.8125rem",
-                    "&:hover": {
-                      color: "#ef4444",
-                      backgroundColor: "rgba(239,68,68,0.08)",
-                    },
+                    color: "#6e6e73",
+                    fontSize: "0.875rem",
+                    "&:hover": { color: "#ef4444", backgroundColor: "rgba(239,68,68,0.08)" },
                   }}
                 >
                   Logout
@@ -281,8 +248,8 @@ export default function Navbar() {
                     component={Link}
                     to="/Login"
                     sx={{
-                      color: isActive("/Login") ? "#0071e3" : "text.secondary",
-                      fontSize: "0.8125rem",
+                      color: isActive("/Login") ? "#0071e3" : "#6e6e73",
+                      fontSize: "0.875rem",
                       "&:hover": { color: "#0071e3" },
                     }}
                   >
@@ -293,7 +260,7 @@ export default function Navbar() {
                     component={Link}
                     to="/SignUp"
                     size="small"
-                    sx={{ fontSize: "0.8125rem", px: 2.5 }}
+                    sx={{ fontSize: "0.875rem", px: 2.5 }}
                   >
                     Sign Up
                   </Button>

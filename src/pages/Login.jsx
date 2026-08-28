@@ -50,31 +50,19 @@ export default function Login() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 400 }}>
-        {/* Apple blue accent line */}
-        <Box
-          sx={{
-            width: 40,
-            height: 3,
-            borderRadius: 980,
-            backgroundColor: "#0071e3",
-            mx: "auto",
-            mb: 3,
-          }}
-        />
-
         <Typography
-          variant="h1"
+          variant="h2"
           sx={{
             fontWeight: 600,
             letterSpacing: "-0.03em",
-            fontSize: { xs: "1.75rem", md: "2.5rem" },
+            fontSize: { xs: "1.75rem", md: "2rem" },
             mb: 1,
             textAlign: "center",
           }}
         >
           Welcome back
         </Typography>
-        <Typography sx={{ color: "text.secondary", mb: 5, textAlign: "center" }}>
+        <Typography sx={{ color: "#6e6e73", mb: 5, textAlign: "center" }}>
           Sign in to your account
         </Typography>
 
@@ -92,7 +80,7 @@ export default function Login() {
             onChange={handleChange}
             required
             placeholder="you@example.com"
-            sx={{ mb: 2.5 }}
+            sx={{ mb: 3 }}
           />
           <TextField
             fullWidth
@@ -112,30 +100,17 @@ export default function Login() {
             size="large"
             disabled={submitting}
             startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{
-              py: 1.5,
-              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-              "&:hover": {
-                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-              },
-            }}
+            sx={{ py: 1.5 }}
           >
             {submitting ? "Signing in..." : "Sign In"}
           </Button>
         </Box>
 
-        <Typography variant="body2" sx={{ mt: 4, textAlign: "center", color: "text.secondary" }}>
+        <Typography sx={{ mt: 4, textAlign: "center", color: "#6e6e73", fontSize: "0.875rem" }}>
           Don't have an account?{" "}
           <Link
             to="/SignUp"
-            style={{
-              color: "#0071e3",
-              fontWeight: 500,
-              textDecoration: "none",
-              transition: "opacity 0.15s",
-            }}
-            onMouseEnter={(e) => e.target.style.opacity = "0.7"}
-            onMouseLeave={(e) => e.target.style.opacity = "1"}
+            style={{ color: "#0071e3", fontWeight: 500, textDecoration: "none" }}
           >
             Create one
           </Link>

@@ -70,7 +70,7 @@ export default function OrderHistory() {
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
       <Typography
         variant="h2"
-        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 4 }}
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2rem" }, mb: 4 }}
       >
         {isAdmin ? "All Orders" : "Orders"}
       </Typography>
@@ -79,17 +79,17 @@ export default function OrderHistory() {
 
       {orders.length === 0 ? (
         <Box textAlign="center" py={14}>
-          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "text.disabled", mb: 3 }} />
-          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 1 }}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "#48484a", mb: 3 }} />
+          <Typography sx={{ color: "#6e6e73", fontSize: "1.125rem", mb: 1 }}>
             No orders yet
           </Typography>
-          <Typography variant="body2" sx={{ color: "text.disabled", mb: 3 }}>
+          <Typography sx={{ color: "#48484a", mb: 3 }}>
             Your order history will appear here
           </Typography>
           <Button variant="contained" component={Link} to="/">Start Shopping</Button>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {orders.map((order) => {
             const status = statusConfig[order.status] || { color: "#666", bg: "rgba(255,255,255,0.05)" };
             return (
@@ -100,57 +100,25 @@ export default function OrderHistory() {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 2.5,
-                  p: 2.5,
+                  gap: 2,
+                  p: 2,
                   borderRadius: "16px",
                   border: "1px solid rgba(255,255,255,0.08)",
                   backgroundColor: "#0a0a0a",
                   textDecoration: "none",
-                  transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  transition: "all 150ms ease",
                   "&:hover": {
-                    borderColor: "rgba(255,255,255,0.15)",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
                     transform: "translateY(-2px)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                    borderColor: "rgba(255,255,255,0.16)",
                   },
                 }}
               >
                 {/* Status Dot + Label */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    minWidth: 120,
-                    flexShrink: 0,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      backgroundColor: status.color,
-                      boxShadow: `0 0 8px ${status.color}40`,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      px: 1.25,
-                      py: 0.25,
-                      borderRadius: 980,
-                      backgroundColor: status.bg,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: "0.7rem",
-                        fontWeight: 500,
-                        color: status.color,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.03em",
-                      }}
-                    >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 120, flexShrink: 0 }}>
+                  <Box sx={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: status.color, boxShadow: `0 0 8px ${status.color}40` }} />
+                  <Box sx={{ px: 1.25, py: 0.25, borderRadius: 980, backgroundColor: status.bg }}>
+                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 500, color: status.color, textTransform: "uppercase", letterSpacing: "0.03em" }}>
                       {order.status}
                     </Typography>
                   </Box>
@@ -158,10 +126,10 @@ export default function OrderHistory() {
 
                 {/* Order Info */}
                 <Box flex={1} minWidth={0}>
-                  <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem" }}>
+                  <Typography sx={{ fontWeight: 500, fontSize: "1rem" }}>
                     {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.25 }}>
+                  <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem", mt: 0.25 }}>
                     {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </Typography>
                 </Box>
@@ -169,17 +137,14 @@ export default function OrderHistory() {
                 {/* Admin: Status Dropdown */}
                 {isAdmin && (
                   <FormControl size="small" sx={{ minWidth: 140 }} onClick={(e) => e.preventDefault()}>
-                    <InputLabel sx={{ fontSize: "0.8125rem" }}>Status</InputLabel>
+                    <InputLabel sx={{ fontSize: "0.875rem" }}>Status</InputLabel>
                     <Select
                       value={order.status}
                       label="Status"
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        handleStatusChange(order._id, e.target.value);
-                      }}
+                      onChange={(e) => { e.stopPropagation(); handleStatusChange(order._id, e.target.value); }}
                       onClick={(e) => e.stopPropagation()}
                       size="small"
-                      sx={{ fontSize: "0.8125rem", borderRadius: 980 }}
+                      sx={{ fontSize: "0.875rem", borderRadius: 980 }}
                     >
                       {statuses.map((s) => (
                         <MenuItem key={s} value={s} sx={{ fontSize: "0.875rem" }}>{s}</MenuItem>
@@ -190,18 +155,13 @@ export default function OrderHistory() {
 
                 {/* Total + View */}
                 <Box display="flex" alignItems="center" gap={2} flexShrink={0}>
-                  <Typography sx={{ fontWeight: 600, fontSize: "1.125rem", color: "#0071e3" }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>
                     ${order.totalAmount?.toFixed(2)}
                   </Typography>
                   <Button
                     variant="outlined"
                     size="small"
-                    sx={{
-                      fontSize: "0.75rem",
-                      py: 0.5,
-                      px: 1.5,
-                      minWidth: "auto",
-                    }}
+                    sx={{ fontSize: "0.75rem", py: 0.5, px: 1.5, minWidth: "auto" }}
                     onClick={(e) => e.preventDefault()}
                   >
                     View

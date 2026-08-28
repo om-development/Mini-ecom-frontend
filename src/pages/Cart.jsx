@@ -80,11 +80,11 @@ export default function Cart() {
     return (
       <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Box textAlign="center" py={14}>
-          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "text.disabled", mb: 3 }} />
-          <Typography sx={{ color: "text.secondary", fontSize: "1.125rem", mb: 1 }}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 80, color: "#48484a", mb: 3 }} />
+          <Typography sx={{ color: "#6e6e73", fontSize: "1.125rem", mb: 1 }}>
             Your cart is empty
           </Typography>
-          <Typography variant="body2" sx={{ color: "text.disabled", mb: 3 }}>
+          <Typography variant="body2" sx={{ color: "#48484a", mb: 3 }}>
             Add some items to get started
           </Typography>
           <Button variant="contained" component={Link} to="/">
@@ -102,32 +102,32 @@ export default function Cart() {
     <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
       <Typography
         variant="h2"
-        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 0.5 }}
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2rem" }, mb: 0.5 }}
       >
         Cart
       </Typography>
-      <Typography sx={{ color: "text.secondary", mb: 4 }}>
+      <Typography sx={{ color: "#6e6e73", mb: 4 }}>
         {cart.items.length} {cart.items.length === 1 ? "item" : "items"}
       </Typography>
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 380px" }, gap: 3, alignItems: "start" }}>
         {/* Items */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {cart.items.map((item) => (
             <Box
               key={item.productId._id}
               sx={{
                 display: "flex",
-                gap: 2.5,
+                gap: 2,
                 p: 2,
                 borderRadius: "16px",
                 border: "1px solid rgba(255,255,255,0.08)",
                 backgroundColor: "#0a0a0a",
-                transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                transition: "all 150ms ease",
                 "&:hover": {
-                  borderColor: "rgba(255,255,255,0.15)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-                  transform: "translateY(-1px)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                  borderColor: "rgba(255,255,255,0.16)",
                 },
               }}
             >
@@ -136,20 +136,19 @@ export default function Cart() {
                 src={item.productId.image}
                 alt={item.productId.title}
                 sx={{
-                  width: 100,
-                  height: 100,
+                  width: 80,
+                  height: 80,
                   objectFit: "cover",
                   borderRadius: "12px",
                   flexShrink: 0,
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
                 }}
               />
               <Box flex={1} display="flex" flexDirection="column" justifyContent="space-between" minWidth={0}>
                 <Box>
-                  <Typography sx={{ fontWeight: 500, fontSize: "0.9375rem" }} noWrap>
+                  <Typography sx={{ fontWeight: 500, fontSize: "1rem" }} noWrap>
                     {item.productId.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.25 }}>
+                  <Typography variant="body2" sx={{ color: "#6e6e73", mt: 0.25 }}>
                     ${item.productId.price.toFixed(2)} each
                   </Typography>
                 </Box>
@@ -159,7 +158,7 @@ export default function Cart() {
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.2)",
                       borderRadius: 980,
                       overflow: "hidden",
                     }}
@@ -168,18 +167,13 @@ export default function Cart() {
                       size="small"
                       onClick={() => updateQty(item.productId._id, item.quantity - 1)}
                       sx={{
-                        width: 34,
-                        height: 34,
+                        width: 32,
+                        height: 32,
                         borderRadius: 0,
-                        color: "text.secondary",
-                        transition: "all 0.15s ease",
-                        "&:hover": {
-                          backgroundColor: "rgba(255,255,255,0.08)",
-                          color: "text.primary",
-                        },
-                        "&:active": {
-                          transform: "scale(0.9)",
-                        },
+                        color: "#6e6e73",
+                        transition: "all 150ms ease",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                        "&:active": { transform: "scale(0.92)" },
                       }}
                     >
                       <RemoveIcon sx={{ fontSize: 14 }} />
@@ -187,8 +181,8 @@ export default function Cart() {
                     <Typography
                       sx={{
                         fontWeight: 500,
-                        fontSize: "0.8125rem",
-                        minWidth: 36,
+                        fontSize: "0.875rem",
+                        minWidth: 32,
                         textAlign: "center",
                         userSelect: "none",
                       }}
@@ -199,18 +193,13 @@ export default function Cart() {
                       size="small"
                       onClick={() => updateQty(item.productId._id, item.quantity + 1)}
                       sx={{
-                        width: 34,
-                        height: 34,
+                        width: 32,
+                        height: 32,
                         borderRadius: 0,
-                        color: "text.secondary",
-                        transition: "all 0.15s ease",
-                        "&:hover": {
-                          backgroundColor: "rgba(255,255,255,0.08)",
-                          color: "text.primary",
-                        },
-                        "&:active": {
-                          transform: "scale(0.9)",
-                        },
+                        color: "#6e6e73",
+                        transition: "all 150ms ease",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.06)", color: "#ededed" },
+                        "&:active": { transform: "scale(0.92)" },
                       }}
                     >
                       <AddIcon sx={{ fontSize: 14 }} />
@@ -218,22 +207,20 @@ export default function Cart() {
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Typography sx={{ fontWeight: 600, fontSize: "0.9375rem" }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: "1rem" }}>
                       ${(item.productId.price * item.quantity).toFixed(2)}
                     </Typography>
                     <IconButton
                       size="small"
                       onClick={() => removeItem(item.productId._id)}
                       sx={{
-                        color: "text.disabled",
-                        transition: "all 0.15s ease",
+                        color: "#48484a",
+                        transition: "all 150ms ease",
                         "&:hover": {
                           color: "#ef4444",
                           backgroundColor: "rgba(239,68,68,0.1)",
                         },
-                        "&:active": {
-                          transform: "scale(0.9)",
-                        },
+                        "&:active": { transform: "scale(0.92)" },
                       }}
                     >
                       <DeleteOutlinedIcon sx={{ fontSize: 18 }} />
@@ -253,26 +240,26 @@ export default function Cart() {
             border: "1px solid rgba(255,255,255,0.08)",
             backgroundColor: "#0a0a0a",
             position: "sticky",
-            top: 72,
+            top: 100,
           }}
         >
-          <Typography sx={{ fontWeight: 500, fontSize: "1.0625rem", mb: 2.5 }}>Summary</Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: "1.5rem", mb: 2.5 }}>Summary</Typography>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Subtotal</Typography>
-            <Typography variant="body2">${total.toFixed(2)}</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Subtotal</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>${total.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Tax (10%)</Typography>
-            <Typography variant="body2">${tax.toFixed(2)}</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Tax (10%)</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>${tax.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
-            <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 500 }}>Free</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Shipping</Typography>
+            <Typography sx={{ color: "#10b981", fontWeight: 500, fontSize: "0.875rem" }}>Free</Typography>
           </Box>
-          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.06)" }} />
+          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.08)" }} />
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
-            <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>
+            <Typography sx={{ fontWeight: 500, fontSize: "1.5rem" }}>Total</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.5rem" }}>
               ${(total + tax).toFixed(2)}
             </Typography>
           </Box>
@@ -281,13 +268,7 @@ export default function Cart() {
             variant="contained"
             size="large"
             onClick={() => navigate("/checkout-address")}
-            sx={{
-              py: 1.5,
-              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-              "&:hover": {
-                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-              },
-            }}
+            sx={{ py: 1.5 }}
           >
             Continue
           </Button>
@@ -295,7 +276,7 @@ export default function Cart() {
             fullWidth
             component={Link}
             to="/"
-            sx={{ mt: 1, color: "text.secondary" }}
+            sx={{ mt: 1, color: "#6e6e73" }}
           >
             Continue Shopping
           </Button>

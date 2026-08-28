@@ -71,7 +71,7 @@ export default function ProductList() {
           <Typography variant="h2" sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.5rem", md: "2rem" }, mb: 0.5 }}>
             Products
           </Typography>
-          <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          <Typography sx={{ color: "#6e6e73" }}>
             Manage your inventory
           </Typography>
         </Box>
@@ -81,12 +81,6 @@ export default function ProductList() {
           component={Link}
           to="/admin/product/add"
           size="small"
-          sx={{
-            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-            "&:hover": {
-              boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-            },
-          }}
         >
           Add Product
         </Button>
@@ -118,11 +112,7 @@ export default function ProductList() {
                 <TableRow
                   key={product._id}
                   hover
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "rgba(255,255,255,0.02)",
-                    },
-                  }}
+                  sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.02)" } }}
                 >
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={2}>
@@ -130,18 +120,12 @@ export default function ProductList() {
                         component="img"
                         src={product.image}
                         alt={product.title}
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 2,
-                          objectFit: "cover",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                        }}
+                        sx={{ width: 40, height: 40, borderRadius: "12px", objectFit: "cover" }}
                       />
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{product.title}</Typography>
+                      <Typography sx={{ fontWeight: 500 }}>{product.title}</Typography>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: "text.secondary" }}>{product.category}</TableCell>
+                  <TableCell sx={{ color: "#6e6e73" }}>{product.category}</TableCell>
                   <TableCell align="right">${product.price?.toFixed(2)}</TableCell>
                   <TableCell align="right">{product.stock}</TableCell>
                   <TableCell align="right">
@@ -149,25 +133,14 @@ export default function ProductList() {
                       size="small"
                       component={Link}
                       to={`/admin/product/edit/${product._id}`}
-                      sx={{
-                        color: "text.secondary",
-                        transition: "all 0.15s ease",
-                        "&:hover": { color: "#0071e3" },
-                      }}
+                      sx={{ color: "#6e6e73", transition: "all 150ms ease", "&:hover": { color: "#0071e3" } }}
                     >
                       <EditOutlinedIcon sx={{ fontSize: 18 }} />
                     </IconButton>
                     <IconButton
                       size="small"
                       onClick={() => handleDelete(product._id)}
-                      sx={{
-                        color: "text.secondary",
-                        transition: "all 0.15s ease",
-                        "&:hover": {
-                          color: "#ef4444",
-                          backgroundColor: "rgba(239,68,68,0.1)",
-                        },
-                      }}
+                      sx={{ color: "#6e6e73", transition: "all 150ms ease", "&:hover": { color: "#ef4444", backgroundColor: "rgba(239,68,68,0.1)" } }}
                     >
                       <DeleteOutlinedIcon sx={{ fontSize: 18 }} />
                     </IconButton>
@@ -178,10 +151,8 @@ export default function ProductList() {
                 <TableRow>
                   <TableCell colSpan={5}>
                     <Box textAlign="center" py={8}>
-                      <Inventory2OutlinedIcon sx={{ fontSize: 48, color: "text.disabled", mb: 2 }} />
-                      <Typography sx={{ color: "text.secondary" }}>
-                        No products found
-                      </Typography>
+                      <Inventory2OutlinedIcon sx={{ fontSize: 48, color: "#48484a", mb: 2 }} />
+                      <Typography sx={{ color: "#6e6e73" }}>No products found</Typography>
                     </Box>
                   </TableCell>
                 </TableRow>

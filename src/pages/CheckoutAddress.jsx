@@ -87,11 +87,11 @@ export default function CheckoutAddress() {
     <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
       <Typography
         variant="h2"
-        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 0.5 }}
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2rem" }, mb: 0.5 }}
       >
         Delivery Address
       </Typography>
-      <Typography sx={{ color: "text.secondary", mb: 4 }}>
+      <Typography sx={{ color: "#6e6e73", mb: 4 }}>
         Where should we deliver?
       </Typography>
 
@@ -119,68 +119,22 @@ export default function CheckoutAddress() {
       >
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              label="Full Name"
-              name="fullName"
-              value={form.fullName}
-              onChange={handleChange}
-              required
-            />
+            <TextField fullWidth label="Full Name" name="fullName" value={form.fullName} onChange={handleChange} required />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              fullWidth
-              label="Phone"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              required
-              inputProps={{ maxLength: 10, inputMode: "numeric" }}
-              helperText="10 digits"
-            />
+            <TextField fullWidth label="Phone" name="phone" value={form.phone} onChange={handleChange} required inputProps={{ maxLength: 10, inputMode: "numeric" }} helperText="10 digits" />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="Address Line"
-              name="addressLine"
-              value={form.addressLine}
-              onChange={handleChange}
-              required
-            />
+            <TextField fullWidth label="Address Line" name="addressLine" value={form.addressLine} onChange={handleChange} required />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
-              fullWidth
-              label="District"
-              name="district"
-              value={form.district}
-              onChange={handleChange}
-              required
-            />
+            <TextField fullWidth label="District" name="district" value={form.district} onChange={handleChange} required />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
-              fullWidth
-              label="Province"
-              name="province"
-              value={form.province}
-              onChange={handleChange}
-              required
-            />
+            <TextField fullWidth label="Province" name="province" value={form.province} onChange={handleChange} required />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
-              fullWidth
-              label="Pincode"
-              name="pincode"
-              value={form.pincode}
-              onChange={handleChange}
-              required
-              inputProps={{ maxLength: 6, inputMode: "numeric" }}
-              helperText="6 digits"
-            />
+            <TextField fullWidth label="Pincode" name="pincode" value={form.pincode} onChange={handleChange} required inputProps={{ maxLength: 6, inputMode: "numeric" }} helperText="6 digits" />
           </Grid>
         </Grid>
         <Button
@@ -190,25 +144,13 @@ export default function CheckoutAddress() {
           size="large"
           disabled={loading}
           startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
-          sx={{
-            mt: 4,
-            py: 1.5,
-            boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-            "&:hover": {
-              boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-            },
-          }}
+          sx={{ mt: 4, py: 1.5 }}
         >
           {loading ? "Saving..." : usedExisting ? "Continue" : "Save & Continue"}
         </Button>
       </Box>
 
-      <Dialog
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={showModal} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 500 }}>Select a Previous Address</DialogTitle>
         <DialogContent>
           <RadioGroup value={selectedAddressId} onChange={(e) => setSelectedAddressId(e.target.value)}>
@@ -222,16 +164,16 @@ export default function CheckoutAddress() {
                   borderRadius: "12px",
                   cursor: "pointer",
                   border: selectedAddressId === addr._id
-                    ? "1px solid rgba(0,113,227,0.5)"
+                    ? "2px solid #0071e3"
                     : "1px solid rgba(255,255,255,0.08)",
                   backgroundColor: selectedAddressId === addr._id
                     ? "rgba(0,113,227,0.08)"
                     : "transparent",
-                  transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  transition: "all 150ms ease",
                   "&:hover": {
                     borderColor: selectedAddressId === addr._id
-                      ? "rgba(0,113,227,0.5)"
-                      : "rgba(255,255,255,0.15)",
+                      ? "#0071e3"
+                      : "rgba(255,255,255,0.16)",
                   },
                 }}
               >
@@ -241,8 +183,8 @@ export default function CheckoutAddress() {
                   label={
                     <Box>
                       <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>{addr.fullName}</Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>{addr.addressLine}</Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>{addr.district}, {addr.province} {addr.pincode}</Typography>
+                      <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>{addr.addressLine}</Typography>
+                      <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>{addr.district}, {addr.province} {addr.pincode}</Typography>
                     </Box>
                   }
                 />
@@ -251,7 +193,7 @@ export default function CheckoutAddress() {
           </RadioGroup>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <Button onClick={() => setShowModal(false)} sx={{ color: "text.secondary" }}>Cancel</Button>
+          <Button onClick={() => setShowModal(false)} sx={{ color: "#6e6e73" }}>Cancel</Button>
           <Button
             variant="contained"
             disabled={!selectedAddressId}

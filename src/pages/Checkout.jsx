@@ -98,14 +98,14 @@ export default function Checkout() {
       <Button
         component={Link}
         to="/cart"
-        sx={{ mb: 3, color: "text.secondary", "&:hover": { color: "text.primary" } }}
+        sx={{ mb: 3, color: "#6e6e73" }}
         size="small"
       >
         &larr; Back to Cart
       </Button>
       <Typography
         variant="h2"
-        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2.25rem" }, mb: 4 }}
+        sx={{ fontWeight: 600, letterSpacing: "-0.03em", fontSize: { xs: "1.75rem", md: "2rem" }, mb: 4 }}
       >
         Checkout
       </Typography>
@@ -117,10 +117,10 @@ export default function Checkout() {
           {/* Address Section */}
           <Box sx={{ mb: 4 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-              <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 500 }}>
+              <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500 }}>
                 Delivery Address
               </Typography>
-              <Button size="small" onClick={() => navigate("/checkout-address")} sx={{ color: "#0071e3", fontSize: "0.8125rem" }}>
+              <Button size="small" onClick={() => navigate("/checkout-address")} sx={{ color: "#0071e3", fontSize: "0.875rem" }}>
                 {address ? "Change" : "Add"}
               </Button>
             </Box>
@@ -135,20 +135,20 @@ export default function Checkout() {
                 }}
               >
                 <Typography sx={{ fontWeight: 500, mb: 0.25 }}>{address.fullName}</Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>{address.addressLine}</Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>{address.addressLine}</Typography>
+                <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>
                   {address.district}, {address.province} {address.pincode}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>Phone: {address.phone}</Typography>
+                <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Phone: {address.phone}</Typography>
               </Box>
             ) : (
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>No address saved yet</Typography>
+              <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>No address saved yet</Typography>
             )}
           </Box>
 
           {/* Items Section */}
           <Box sx={{ mb: 4 }}>
-            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2, fontWeight: 500 }}>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 2, fontWeight: 500 }}>
               Items
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
@@ -168,12 +168,12 @@ export default function Checkout() {
                     component="img"
                     src={item.productId.image}
                     alt={item.productId.title}
-                    sx={{ width: 56, height: 56, objectFit: "cover", borderRadius: "10px", flexShrink: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}
+                    sx={{ width: 56, height: 56, objectFit: "cover", borderRadius: "12px", flexShrink: 0 }}
                   />
                   <Box flex={1} display="flex" justifyContent="space-between" alignItems="center">
                     <Box>
                       <Typography sx={{ fontWeight: 500, fontSize: "0.875rem" }}>{item.productId.title}</Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>
                         {item.quantity} x ${item.productId.price.toFixed(2)}
                       </Typography>
                     </Box>
@@ -188,7 +188,7 @@ export default function Checkout() {
 
           {/* Payment Section */}
           <Box>
-            <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 2, fontWeight: 500 }}>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", mb: 2, fontWeight: 500 }}>
               Payment Method
             </Typography>
             <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
@@ -210,17 +210,17 @@ export default function Checkout() {
                       px: 2,
                       borderRadius: "12px",
                       border: paymentMethod === option.value
-                        ? "1px solid rgba(0,113,227,0.5)"
+                        ? "2px solid #0071e3"
                         : "1px solid rgba(255,255,255,0.08)",
                       backgroundColor: paymentMethod === option.value
                         ? "rgba(0,113,227,0.08)"
                         : "transparent",
-                      transition: "all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      transition: "all 150ms ease",
                       cursor: "pointer",
                       "&:hover": {
                         borderColor: paymentMethod === option.value
-                          ? "rgba(0,113,227,0.5)"
-                          : "rgba(255,255,255,0.15)",
+                          ? "#0071e3"
+                          : "rgba(255,255,255,0.16)",
                       },
                     }}
                   />
@@ -238,26 +238,26 @@ export default function Checkout() {
             border: "1px solid rgba(255,255,255,0.08)",
             backgroundColor: "#0a0a0a",
             position: "sticky",
-            top: 72,
+            top: 100,
           }}
         >
-          <Typography sx={{ fontWeight: 500, fontSize: "1.0625rem", mb: 2.5 }}>Summary</Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: "1.5rem", mb: 2.5 }}>Summary</Typography>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Subtotal</Typography>
-            <Typography variant="body2">${subtotal.toFixed(2)}</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Subtotal</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>${subtotal.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Tax (10%)</Typography>
-            <Typography variant="body2">${tax.toFixed(2)}</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Tax (10%)</Typography>
+            <Typography sx={{ fontSize: "0.875rem" }}>${tax.toFixed(2)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>Shipping</Typography>
-            <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 500 }}>Free</Typography>
+            <Typography sx={{ color: "#6e6e73", fontSize: "0.875rem" }}>Shipping</Typography>
+            <Typography sx={{ color: "#10b981", fontWeight: 500, fontSize: "0.875rem" }}>Free</Typography>
           </Box>
-          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.06)" }} />
+          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.08)" }} />
           <Box display="flex" justifyContent="space-between" sx={{ mb: 3 }}>
-            <Typography sx={{ fontWeight: 500 }}>Total</Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: "1.25rem", color: "#0071e3" }}>${total.toFixed(2)}</Typography>
+            <Typography sx={{ fontWeight: 500, fontSize: "1.5rem" }}>Total</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "1.5rem" }}>${total.toFixed(2)}</Typography>
           </Box>
           <Button
             fullWidth
@@ -266,13 +266,7 @@ export default function Checkout() {
             onClick={handlePlaceOrder}
             disabled={loading || !address}
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
-            sx={{
-              py: 1.5,
-              boxShadow: "0 4px 16px rgba(0,113,227,0.25)",
-              "&:hover": {
-                boxShadow: "0 8px 24px rgba(0,113,227,0.35)",
-              },
-            }}
+            sx={{ py: 1.5 }}
           >
             {loading ? "Placing order..." : "Place Order"}
           </Button>
