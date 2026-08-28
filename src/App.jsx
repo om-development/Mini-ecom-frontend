@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderHistory from "./pages/OrderHistory";
+import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/ProtectedRoute";
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
           { path: "/admin/product/edit/:id", element: <EditProduct /> },
         ],
       },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

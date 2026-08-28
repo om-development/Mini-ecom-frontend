@@ -18,7 +18,7 @@ export default function Cart() {
     try {
       setLoading(true);
       setError(null);
-      const res = await api.get(`/cart/${user.id}`);
+      const res = await api.get(`/cart`);
       setCart(res.data.cart);
     } catch (err) {
       console.error("Error loading cart:", err);
@@ -35,7 +35,7 @@ export default function Cart() {
   // Remove item from cart
   const removeItem = async (productId) => {
     try {
-      await api.post(`/cart/remove`, { userId: user.id, productId });
+      await api.post(`/cart/remove`, { productId });
       loadCart();
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
@@ -51,7 +51,7 @@ export default function Cart() {
       return;
     }
     try {
-      await api.post(`/cart/update`, { userId: user.id, productId, quantity });
+      await api.post(`/cart/update`, { productId, quantity });
       loadCart();
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {

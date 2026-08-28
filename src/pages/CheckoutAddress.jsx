@@ -23,7 +23,7 @@ export default function CheckoutAddress() {
   useEffect(() => {
     const loadPreviousAddresses = async () => {
       try {
-        const res = await api.get(`/address/${user?.id}`);
+        const res = await api.get(`/address`);
         console.log("Address Response:", res.data); // DEBUG
         if (Array.isArray(res.data.address)) {
           setPreviousAddresses(res.data.address);
@@ -35,10 +35,10 @@ export default function CheckoutAddress() {
       }
     };
 
-    if (user?.id) {
+    if (user) {
       loadPreviousAddresses();
     }
-  }, [user?.id]);
+  }, [user]);
 
   // Close modal on escape key
   useEffect(() => {
@@ -62,7 +62,6 @@ export default function CheckoutAddress() {
     try {
       // Set this address as active in backend
       await api.post(`/address/set-active`, {
-        userId: user?.id,
         addressId: address._id,
       });
 
@@ -132,7 +131,6 @@ export default function CheckoutAddress() {
 
       await api.post(`/address/add`, {
         ...form,
-        userId: user?.id,
       });
 
       // Always navigate to checkout (whether new address or already exists)

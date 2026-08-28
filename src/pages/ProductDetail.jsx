@@ -34,7 +34,7 @@ export default function ProductDetail() {
         return;
       }
 
-      const res = await api.post(`/cart/add`, { userId: user.id, productId });
+      const res = await api.post(`/cart/add`, { productId });
 
       // Dispatch event to trigger navbar update
       window.dispatchEvent(new Event("cartUpdated"));

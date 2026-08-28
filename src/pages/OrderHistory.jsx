@@ -20,7 +20,7 @@ export default function OrderHistory() {
           return;
         }
 
-        const res = await api.get(`/order/user/${user?.id}`);
+        const res = await api.get(`/order/user/me`);
         setOrders(res.data.orders || []);
       } catch (err) {
         console.error("Error loading orders:", err);
@@ -31,7 +31,7 @@ export default function OrderHistory() {
     };
 
     loadOrders();
-  }, [user?.id]);
+  }, []);
 
   if (loading) {
     return (

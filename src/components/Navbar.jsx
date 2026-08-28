@@ -20,7 +20,7 @@ export default function Navbar() {
 
     try {
       setLoading(true);
-      const res = await api.get(`/cart/${user.id}`);
+      const res = await api.get(`/cart`);
 
       // Your API returns { message, cart } where cart has items array
       const cart = res.data.cart;
@@ -119,6 +119,15 @@ export default function Navbar() {
             >
               My Orders
             </Link>
+            {/* Admin Links */}
+            {user?.role === "admin" && (
+              <Link
+                to="/admin/product/list"
+                className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 hover:text-emerald-300 rounded-lg transition font-medium border border-emerald-600/30"
+              >
+                Admin Panel
+              </Link>
+            )}
             {/* Auth Links */}
             <div className="flex gap-3 items-center">
               {!user ? (

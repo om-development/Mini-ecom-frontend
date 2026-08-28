@@ -24,8 +24,8 @@ export default function Checkout() {
         }
 
         const [cartRes, addressRes] = await Promise.all([
-          api.get(`/cart/${user.id}`),
-          api.get(`/address/${user.id}`),
+          api.get(`/cart`),
+          api.get(`/address`),
         ]);
 
         setCart(cartRes.data.cart);
@@ -60,7 +60,6 @@ export default function Checkout() {
 
       // Call order placement API
       const res = await api.post(`/order/place`, {
-        userId: user.id,
         address,
         paymentMethod,
       });
