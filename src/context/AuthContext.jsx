@@ -13,11 +13,7 @@ export function AuthProvider({ children }) {
         const res = await api.get("/auth/me");
         const u = res.data.user;
         setUser({ id: u._id, name: u.name, email: u.email, role: u.role });
-        localStorage.setItem("userId", u._id);
-        localStorage.setItem("role", u.role);
       } catch {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
         setUser(null);
       }
       setLoading(false);
@@ -26,8 +22,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    localStorage.setItem("userId", userData.id);
-    localStorage.setItem("role", userData.role);
     setUser({ id: userData.id, name: userData.name, email: userData.email, role: userData.role });
   };
 
@@ -37,8 +31,6 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.error("Logout error:", err);
     }
-    localStorage.removeItem("userId");
-    localStorage.removeItem("role");
     setUser(null);
   };
 
