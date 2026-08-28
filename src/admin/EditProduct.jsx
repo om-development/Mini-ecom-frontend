@@ -68,23 +68,23 @@ const EditProduct = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-        <CircularProgress />
+        <CircularProgress size={24} />
       </Box>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>Edit Product</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+    <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+      <Typography variant="h3" sx={{ mb: 1 }}>Edit Product</Typography>
+      <Typography variant="body1" sx={{ color: "text.secondary", mb: 4 }}>
         Update product details
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Paper sx={{ p: 4 }}>
+      <Paper sx={{ p: { xs: 3, md: 4 } }}>
         <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
               <TextField fullWidth label="Product Title" name="title" value={form.title} onChange={handleChange} required />
             </Grid>
@@ -110,10 +110,10 @@ const EditProduct = () => {
             type="submit"
             size="large"
             disabled={submitting}
-            startIcon={submitting ? <CircularProgress size={20} /> : null}
-            sx={{ mt: 3 }}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{ mt: 4 }}
           >
-            {submitting ? "Updating..." : "Update Product"}
+            {submitting ? "Saving..." : "Save Changes"}
           </Button>
         </Box>
       </Paper>

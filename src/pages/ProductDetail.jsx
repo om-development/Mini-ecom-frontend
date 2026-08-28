@@ -10,7 +10,6 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import Chip from "@mui/material/Chip";
 import Snackbar from "@mui/material/Snackbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
@@ -30,7 +29,7 @@ export default function ProductDetail() {
       const res = await api.get(`/products/${id}`);
       setProduct(res.data.product);
     } catch {
-      setError("Failed to load product details");
+      setError("Failed to load product");
     } finally {
       setLoading(false);
     }
@@ -44,9 +43,9 @@ export default function ProductDetail() {
     try {
       await api.post("/cart/add", { productId: id });
       window.dispatchEvent(new Event("cartUpdated"));
-      setToast({ open: true, message: "Product added to cart!", severity: "success" });
+      setToast({ open: true, message: "Added to cart", severity: "success" });
     } catch {
-      setToast({ open: true, message: "Failed to add product to cart", severity: "error" });
+      setToast({ open: true, message: "Failed to add to cart", severity: "error" });
     }
   };
 
@@ -55,14 +54,14 @@ export default function ProductDetail() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-        <CircularProgress />
+        <CircularProgress size={24} />
       </Box>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/")}>
           Back to Home
@@ -74,17 +73,17 @@ export default function ProductDetail() {
   if (!product) return null;
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
       <Button
-        startIcon={<ArrowBackIcon />}
+        startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
         onClick={() => navigate(-1)}
-        sx={{ mb: 3 }}
+        sx={{ mb: 4, color: "text.secondary" }}
       >
         Back
       </Button>
 
-      <Paper sx={{ p: 4 }}>
-        <Grid container spacing={4}>
+      <Paper sx={{ overflow: "hidden" }}>
+        <Grid container>
           <Grid size={{ xs: 12, md: 6 }}>
             <Box
               component="img"
@@ -92,52 +91,52 @@ export default function ProductDetail() {
               alt={product.title}
               sx={{
                 width: "100%",
-                height: 400,
+                height: { xs: 300, md: 420 },
                 objectFit: "cover",
-                borderRadius: 1,
               }}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
-              {product.title}
-            </Typography>
-            <Chip label={product.category} size="small" sx={{ mb: 2 }} />
-            <Typography variant="h4" color="primary" gutterBottom>
-              ${product.price.toFixed(2)}
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              Stock: {product.stock}
-            </Typography>
-            {product.stock < 5 && product.stock > 0 && (
-              <Alert severity="warning" sx={{ mb: 2 }}>
-                Only {product.stock} left in stock!
-              </Alert>
-            )}
-            {product.stock === 0 && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                Out of stock
-              </Alert>
-            )}
-            <Typography variant="body1" sx={{ mb: 3, whiteSpace: "pre-line" }}>
-              {product.description}
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={product.stock === 0}
-              onClick={addToCart}
-            >
-              Add to Cart
-            </Button>
+            <Box sx={{ p: { xs: 3, md: 5 } }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", mb: 1, textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.75rem" }}>
+                {product.category}
+              </Typography>
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: 500 }}>
+                {product.title}
+              </Typography>
+              <Typography variant="h4" sx={{ mb: 3, fontWeight: 500 }}>
+                ${product.price.toFixed(2)}
+              </Typography>
+
+              {product.stock < 5 && product.stock > 0 && (
+                <Alert severity="warning" sx={{ mb: 2 }}>Only {product.stock} left in stock</Alert>
+              )}
+              {product.stock === 0 && (
+                <Alert severity="error" sx={{ mb: 2 }}>Out of stock</Alert>
+              )}
+
+              <Typography variant="body1" sx={{ color: "text.secondary", mb: 4, lineHeight: 1.7 }}>
+                {product.description}
+              </Typography>
+
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={product.stock === 0}
+                onClick={addToCart}
+                sx={{ py: 1.5 }}
+              >
+                Add to Cart
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Paper>
 
       <Snackbar
         open={toast.open}
-        autoHideDuration={3000}
+        autoHideDuration={2500}
         onClose={() => setToast({ ...toast, open: false })}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >

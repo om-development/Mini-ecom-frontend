@@ -28,8 +28,8 @@ export default function SignUp() {
     try {
       await api.post("/auth/signup", form);
       setSeverity("success");
-      setMsg("Account created! Redirecting to login...");
-      setTimeout(() => navigate("/Login"), 1500);
+      setMsg("Account created! Redirecting...");
+      setTimeout(() => navigate("/Login"), 1200);
     } catch (error) {
       setSeverity("error");
       setMsg(error.response?.data?.message || "Something went wrong");
@@ -39,19 +39,17 @@ export default function SignUp() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-          Sign Up
+    <Container maxWidth="sm" sx={{ mt: { xs: 8, md: 12 } }}>
+      <Paper sx={{ p: { xs: 4, md: 6 }, textAlign: "center" }}>
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Create account
         </Typography>
-        <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
-          Create your account
+        <Typography variant="body1" sx={{ color: "text.secondary", mb: 5 }}>
+          Get started in seconds
         </Typography>
 
         {msg && (
-          <Alert severity={severity} sx={{ mb: 2 }}>
-            {msg}
-          </Alert>
+          <Alert severity={severity} sx={{ mb: 3 }}>{msg}</Alert>
         )}
 
         <Box component="form" onSubmit={handleSubmit}>
@@ -62,17 +60,17 @@ export default function SignUp() {
             value={form.name}
             onChange={handleChange}
             required
-            sx={{ mb: 2 }}
+            sx={{ mb: 2.5 }}
           />
           <TextField
             fullWidth
-            label="Email Address"
+            label="Email"
             name="email"
             type="email"
             value={form.email}
             onChange={handleChange}
             required
-            sx={{ mb: 2 }}
+            sx={{ mb: 2.5 }}
           />
           <TextField
             fullWidth
@@ -83,7 +81,7 @@ export default function SignUp() {
             onChange={handleChange}
             required
             helperText="Must be at least 6 characters"
-            sx={{ mb: 3 }}
+            sx={{ mb: 4 }}
           />
           <Button
             fullWidth
@@ -91,15 +89,15 @@ export default function SignUp() {
             type="submit"
             size="large"
             disabled={submitting}
-            startIcon={submitting ? <CircularProgress size={20} /> : null}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
           >
-            {submitting ? "Creating account..." : "Sign Up"}
+            {submitting ? "Creating account..." : "Create Account"}
           </Button>
         </Box>
 
-        <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+        <Typography variant="body2" sx={{ mt: 4, color: "text.secondary" }}>
           Already have an account?{" "}
-          <Link to="/Login" style={{ color: "#818cf8" }}>
+          <Link to="/Login" style={{ color: "#0071e3", fontWeight: 500 }}>
             Sign in
           </Link>
         </Typography>

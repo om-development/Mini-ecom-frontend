@@ -53,10 +53,7 @@ export default function Navbar() {
     }
   };
 
-  useEffect(() => {
-    loadCartData();
-  }, [user]);
-
+  useEffect(() => { loadCartData(); }, [user]);
   useEffect(() => {
     window.addEventListener("cartUpdated", loadCartData);
     return () => window.removeEventListener("cartUpdated", loadCartData);
@@ -72,59 +69,57 @@ export default function Navbar() {
   const navLinks = user
     ? [
         { text: "Home", icon: <HomeIcon />, to: "/" },
-        { text: "My Orders", icon: <ShoppingBagIcon />, to: "/orders" },
+        { text: "Orders", icon: <ShoppingBagIcon />, to: "/orders" },
         ...(user.role === "admin"
-          ? [{ text: "Admin Panel", icon: <AdminPanelSettingsIcon />, to: "/admin/product/list" }]
+          ? [{ text: "Admin", icon: <AdminPanelSettingsIcon />, to: "/admin/product/list" }]
           : []),
       ]
-    : [
-        { text: "Home", icon: <HomeIcon />, to: "/" },
-      ];
+    : [{ text: "Home", icon: <HomeIcon />, to: "/" }];
 
   const authLinks = user
-    ? [
-        { text: "Logout", icon: <LogoutIcon />, action: logout },
-      ]
+    ? [{ text: "Logout", icon: <LogoutIcon />, action: logout }]
     : [
         { text: "Login", icon: <LoginIcon />, to: "/Login" },
         { text: "Sign Up", icon: <PersonAddIcon />, to: "/SignUp" },
       ];
 
   const drawerContent = (
-    <Box sx={{ width: 250 }} role="presentation">
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" color="primary" fontWeight="bold">
+    <Box sx={{ width: 260 }} role="presentation">
+      <Box sx={{ p: "20px 24px" }}>
+        <Typography variant="h6" sx={{ fontWeight: 500, letterSpacing: "-0.02em" }}>
           Mohit Store
         </Typography>
       </Box>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
         {navLinks.map((link) => (
-          <ListItem key={link.text} disablePadding>
+          <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               component={Link}
               to={link.to}
               onClick={() => setDrawerOpen(false)}
+              sx={{ borderRadius: 10, py: 1.2 }}
             >
-              <ListItemIcon>{link.icon}</ListItemIcon>
-              <ListItemText primary={link.text} />
+              <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemText primary={link.text} primaryTypographyProps={{ fontSize: "0.9375rem", fontWeight: 400 }} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
         {authLinks.map((link) => (
-          <ListItem key={link.text} disablePadding>
+          <ListItem key={link.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               onClick={() => {
                 setDrawerOpen(false);
                 if (link.action) link.action();
                 else navigate(link.to);
               }}
+              sx={{ borderRadius: 10, py: 1.2 }}
             >
-              <ListItemIcon>{link.icon}</ListItemIcon>
-              <ListItemText primary={link.text} />
+              <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>{link.icon}</ListItemIcon>
+              <ListItemText primary={link.text} primaryTypographyProps={{ fontSize: "0.9375rem", fontWeight: 400 }} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -134,16 +129,15 @@ export default function Navbar() {
 
   return (
     <>
-      <AppBar position="sticky" sx={{ backgroundColor: "background.paper" }}>
-        <Toolbar>
+      <AppBar position="sticky">
+        <Toolbar sx={{ px: { xs: 2, md: 4 }, height: 52 }}>
           {isMobile && (
             <IconButton
-              color="inherit"
               edge="start"
               onClick={() => setDrawerOpen(true)}
-              sx={{ mr: 1 }}
+              sx={{ mr: 1, color: "text.primary" }}
             >
-              <MenuIcon />
+              <MenuIcon fontSize="small" />
             </IconButton>
           )}
 
@@ -153,23 +147,29 @@ export default function Navbar() {
             to="/"
             sx={{
               flexGrow: 1,
-              color: "primary.main",
-              fontWeight: "bold",
+              color: "text.primary",
+              fontWeight: 500,
               textDecoration: "none",
+              letterSpacing: "-0.02em",
+              fontSize: "1.1rem",
             }}
           >
             Mohit Store
           </Typography>
 
           {!isMobile && (
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
               {navLinks.map((link) => (
                 <Button
                   key={link.text}
-                  color="inherit"
                   component={Link}
                   to={link.to}
-                  sx={{ color: "text.primary" }}
+                  sx={{
+                    color: "text.secondary",
+                    fontSize: "0.8125rem",
+                    px: 1.5,
+                    "&:hover": { color: "text.primary", backgroundColor: "transparent" },
+                  }}
                 >
                   {link.text}
                 </Button>
@@ -177,35 +177,33 @@ export default function Navbar() {
             </Box>
           )}
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: 2 }}>
             <IconButton
-              color="inherit"
               component={Link}
               to="/cart"
-              sx={{ color: "text.primary" }}
+              sx={{ color: "text.secondary", "&:hover": { color: "text.primary" } }}
             >
               <Badge badgeContent={cartCount} color="primary">
-                <ShoppingCartIcon />
+                <ShoppingCartIcon fontSize="small" />
               </Badge>
             </IconButton>
 
             {!isMobile &&
               (user ? (
                 <Button
-                  color="secondary"
-                  variant="outlined"
+                  variant="text"
                   size="small"
                   onClick={logout}
+                  sx={{ color: "text.secondary", fontSize: "0.8125rem", "&:hover": { color: "text.primary" } }}
                 >
                   Logout
                 </Button>
               ) : (
                 <>
                   <Button
-                    color="inherit"
                     component={Link}
                     to="/Login"
-                    sx={{ color: "text.primary" }}
+                    sx={{ color: "text.secondary", fontSize: "0.8125rem", "&:hover": { color: "text.primary" } }}
                   >
                     Login
                   </Button>
@@ -214,6 +212,7 @@ export default function Navbar() {
                     component={Link}
                     to="/SignUp"
                     size="small"
+                    sx={{ fontSize: "0.8125rem", px: 2.5 }}
                   >
                     Sign Up
                   </Button>

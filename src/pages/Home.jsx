@@ -68,9 +68,9 @@ const Home = () => {
     try {
       await api.post("/cart/add", { productId });
       window.dispatchEvent(new Event("cartUpdated"));
-      setToast({ open: true, message: "Product added to cart!", severity: "success" });
+      setToast({ open: true, message: "Added to cart", severity: "success" });
     } catch {
-      setToast({ open: true, message: "Failed to add product to cart", severity: "error" });
+      setToast({ open: true, message: "Failed to add to cart", severity: "error" });
     }
   };
 
@@ -101,10 +101,15 @@ const Home = () => {
   const paginatedProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Products
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+      <Box sx={{ mb: 5 }}>
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Discover
+        </Typography>
+        <Typography variant="body1" sx={{ color: "text.secondary", maxWidth: 480 }}>
+          Browse our collection of products curated just for you.
+        </Typography>
+      </Box>
 
       <TextField
         fullWidth
@@ -115,20 +120,21 @@ const Home = () => {
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon color="action" />
+                <SearchIcon sx={{ color: "text.secondary", fontSize: 20 }} />
               </InputAdornment>
             ),
           },
         }}
-        sx={{ mb: 3 }}
+        sx={{ mb: 3, maxWidth: 480 }}
       />
 
-      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 3 }}>
+      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 4 }}>
         <Chip
-          label="All Categories"
+          label="All"
           clickable
           color={category === "All Categories" || !category ? "primary" : "default"}
           onClick={() => handleCategory("All Categories")}
+          variant={category === "All Categories" || !category ? "filled" : "outlined"}
         />
         {categories.map((cat) => (
           <Chip
@@ -137,29 +143,28 @@ const Home = () => {
             clickable
             color={category === cat ? "primary" : "default"}
             onClick={() => handleCategory(cat)}
+            variant={category === cat ? "filled" : "outlined"}
           />
         ))}
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {error}
-        </Alert>
+        <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       )}
 
       {loading ? (
-        <Box display="flex" justifyContent="center" py={8}>
-          <CircularProgress />
+        <Box display="flex" justifyContent="center" py={12}>
+          <CircularProgress size={24} />
         </Box>
       ) : paginatedProducts.length === 0 ? (
-        <Box textAlign="center" py={8}>
-          <Typography variant="h6" color="text.secondary">
+        <Box textAlign="center" py={12}>
+          <Typography variant="h5" sx={{ color: "text.secondary", fontWeight: 400 }}>
             No products found
           </Typography>
         </Box>
       ) : (
         <>
-          <Grid container spacing={3}>
+          <Grid container spacing={2.5}>
             {paginatedProducts.map((product) => (
               <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
                 <Card
@@ -167,43 +172,57 @@ const Home = () => {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "translateY(-4px)" },
+                    cursor: "pointer",
                   }}
                 >
                   <CardMedia
                     component="img"
-                    height="200"
+                    height="220"
                     image={product.image}
                     alt={product.title}
-                    sx={{ objectFit: "cover" }}
+                    sx={{
+                      objectFit: "cover",
+                      borderRadius: "16px 16px 0 0",
+                    }}
                   />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                  <CardContent sx={{ flexGrow: 1, p: 2.5, pb: 1 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 500,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        mb: 0.25,
+                      }}
+                    >
                       {product.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography variant="body2" sx={{ mb: 1.5 }}>
                       {product.category}
                     </Typography>
-                    <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                      ${product.price.toFixed(2)}
-                    </Typography>
-                    {product.stock < 5 && product.stock > 0 && (
-                      <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
-                        Only {product.stock} left
-                      </Alert>
-                    )}
-                    {product.stock === 0 && (
-                      <Alert severity="error" sx={{ mt: 1, py: 0 }}>
-                        Out of stock
-                      </Alert>
-                    )}
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        ${product.price.toFixed(2)}
+                      </Typography>
+                      {product.stock < 5 && product.stock > 0 && (
+                        <Typography variant="body2" sx={{ color: "warning.main", fontSize: "0.75rem" }}>
+                          Only {product.stock} left
+                        </Typography>
+                      )}
+                      {product.stock === 0 && (
+                        <Typography variant="body2" sx={{ color: "error.main", fontSize: "0.75rem" }}>
+                          Out of stock
+                        </Typography>
+                      )}
+                    </Box>
                   </CardContent>
-                  <CardActions sx={{ p: 2, pt: 0 }}>
+                  <CardActions sx={{ p: 2.5, pt: 1.5, gap: 1 }}>
                     <Button
                       size="small"
                       component={Link}
                       to={`/product/${product._id}`}
+                      sx={{ color: "text.secondary", fontSize: "0.8125rem" }}
                     >
                       View
                     </Button>
@@ -212,6 +231,7 @@ const Home = () => {
                       variant="contained"
                       disabled={product.stock === 0}
                       onClick={() => addToCart(product._id)}
+                      sx={{ fontSize: "0.8125rem" }}
                     >
                       Add to Cart
                     </Button>
@@ -222,12 +242,13 @@ const Home = () => {
           </Grid>
 
           {totalPages > 1 && (
-            <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+            <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
               <Pagination
                 count={totalPages}
                 page={page}
                 onChange={(_, val) => setPage(val)}
                 color="primary"
+                size="small"
               />
             </Box>
           )}
@@ -236,7 +257,7 @@ const Home = () => {
 
       <Snackbar
         open={toast.open}
-        autoHideDuration={3000}
+        autoHideDuration={2500}
         onClose={() => setToast({ ...toast, open: false })}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >

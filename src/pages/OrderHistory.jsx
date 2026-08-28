@@ -13,12 +13,12 @@ import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import Snackbar from "@mui/material/Snackbar";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 
 export default function OrderHistory() {
   const { user } = useAuth();
@@ -58,21 +58,23 @@ export default function OrderHistory() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-        <CircularProgress />
+        <CircularProgress size={24} />
       </Box>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>My Orders</Typography>
+    <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+      <Typography variant="h3" sx={{ mb: 4 }}>
+        {isAdmin ? "All Orders" : "Orders"}
+      </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {orders.length === 0 ? (
-        <Paper sx={{ p: 6, textAlign: "center" }}>
-          <ShoppingBagIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
+        <Paper sx={{ p: { xs: 4, md: 8 }, textAlign: "center" }}>
+          <ShoppingBagOutlinedIcon sx={{ fontSize: 56, color: "text.disabled", mb: 2 }} />
+          <Typography variant="h5" sx={{ color: "text.secondary", mb: 3, fontWeight: 400 }}>
             No orders yet
           </Typography>
           <Button variant="contained" component={Link} to="/">
@@ -82,24 +84,34 @@ export default function OrderHistory() {
       ) : (
         <Box display="flex" flexDirection="column" gap={2}>
           {orders.map((order) => (
-            <Card key={order._id} component={Link} to={`/order-success/${order._id}`} sx={{ textDecoration: "none" }}>
-              <CardContent>
+            <Card
+              key={order._id}
+              component={Link}
+              to={`/order-success/${order._id}`}
+              sx={{ textDecoration: "none", "&:hover": { opacity: 0.85 } }}
+            >
+              <CardContent sx={{ p: { xs: 2.5, md: 3 }, "&:last-child": { pb: { xs: 2.5, md: 3 } } }}>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.25 }}>
                       {new Date(order.createdAt).toLocaleDateString()}
                     </Typography>
-                    <Typography fontWeight="medium" sx={{ mt: 0.5 }}>
+                    <Typography sx={{ fontWeight: 500 }}>
                       {order.items?.length} {order.items?.length === 1 ? "item" : "items"}
                     </Typography>
                   </Box>
                   {isAdmin ? (
-                    <FormControl size="small" sx={{ minWidth: 140 }}>
+                    <FormControl size="small" sx={{ minWidth: 130 }} onClick={(e) => e.preventDefault()}>
                       <InputLabel>Status</InputLabel>
                       <Select
                         value={order.status}
                         label="Status"
-                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleStatusChange(order._id, e.target.value);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        size="small"
                       >
                         {statuses.map((s) => (
                           <MenuItem key={s} value={s}>{s}</MenuItem>
@@ -109,17 +121,21 @@ export default function OrderHistory() {
                   ) : (
                     <Chip
                       label={order.status}
-                      color={order.status === "Delivered" ? "success" : order.status === "Shipped" ? "info" : "warning"}
                       size="small"
+                      color={
+                        order.status === "Delivered" ? "success" :
+                        order.status === "Shipped" ? "info" :
+                        order.status === "Cancelled" ? "error" : "warning"
+                      }
                     />
                   )}
                 </Box>
-                <Divider sx={{ my: 1 }} />
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="body2" color="text.secondary">
+                <Divider sx={{ my: 1.5 }} />
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
                     {order.paymentMethod?.toUpperCase()}
                   </Typography>
-                  <Typography fontWeight="bold" color="primary">
+                  <Typography sx={{ fontWeight: 600 }}>
                     ${order.totalAmount?.toFixed(2)}
                   </Typography>
                 </Box>
@@ -129,7 +145,7 @@ export default function OrderHistory() {
         </Box>
       )}
 
-      <Snackbar open={!!toast} autoHideDuration={3000} onClose={() => setToast(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Snackbar open={!!toast} autoHideDuration={2500} onClose={() => setToast(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={() => setToast(null)} severity={toast?.type} sx={{ width: "100%" }}>
           {toast?.msg}
         </Alert>

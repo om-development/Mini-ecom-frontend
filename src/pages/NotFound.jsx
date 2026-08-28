@@ -7,15 +7,25 @@ import Box from "@mui/material/Box";
 export default function NotFound() {
   return (
     <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="60vh">
-        <Typography variant="h1" color="primary" fontWeight="bold">
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="65vh">
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: "6rem",
+            fontWeight: 600,
+            letterSpacing: "-0.04em",
+            color: "text.disabled",
+            lineHeight: 1,
+            mb: 2,
+          }}
+        >
           404
         </Typography>
-        <Typography variant="h5" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ color: "text.secondary", mb: 4, fontWeight: 400 }}>
           Page not found
         </Typography>
-        <Button variant="contained" component={Link} to="/" size="large">
-          Back to Home
+        <Button variant="contained" component={Link} to="/">
+          Go Home
         </Button>
       </Box>
     </Container>

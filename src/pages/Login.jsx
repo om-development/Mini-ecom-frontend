@@ -30,9 +30,9 @@ export default function Login() {
     try {
       const response = await api.post("/auth/login", form);
       setSeverity("success");
-      setMsg("Logged in successfully!");
+      setMsg("Welcome back!");
       login(response.data.user);
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/"), 800);
     } catch (error) {
       setSeverity("error");
       setMsg(error.response?.data?.message || "Something went wrong");
@@ -42,32 +42,30 @@ export default function Login() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-          Sign In
+    <Container maxWidth="sm" sx={{ mt: { xs: 8, md: 12 } }}>
+      <Paper sx={{ p: { xs: 4, md: 6 }, textAlign: "center" }}>
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Welcome back
         </Typography>
-        <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
-          Login to access your account
+        <Typography variant="body1" sx={{ color: "text.secondary", mb: 5 }}>
+          Sign in to your account
         </Typography>
 
         {msg && (
-          <Alert severity={severity} sx={{ mb: 2 }}>
-            {msg}
-          </Alert>
+          <Alert severity={severity} sx={{ mb: 3 }}>{msg}</Alert>
         )}
 
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Email Address"
+            label="Email"
             name="email"
             type="email"
             value={form.email}
             onChange={handleChange}
             required
-            placeholder="you@company.com"
-            sx={{ mb: 2 }}
+            placeholder="you@example.com"
+            sx={{ mb: 2.5 }}
           />
           <TextField
             fullWidth
@@ -77,8 +75,8 @@ export default function Login() {
             value={form.password}
             onChange={handleChange}
             required
-            placeholder="Your Password"
-            sx={{ mb: 3 }}
+            placeholder="Your password"
+            sx={{ mb: 4 }}
           />
           <Button
             fullWidth
@@ -86,16 +84,16 @@ export default function Login() {
             type="submit"
             size="large"
             disabled={submitting}
-            startIcon={submitting ? <CircularProgress size={20} /> : null}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
           >
-            {submitting ? "Signing in..." : "Sign in"}
+            {submitting ? "Signing in..." : "Sign In"}
           </Button>
         </Box>
 
-        <Typography variant="body2" align="center" sx={{ mt: 3 }}>
+        <Typography variant="body2" sx={{ mt: 4, color: "text.secondary" }}>
           Don't have an account?{" "}
-          <Link to="/SignUp" style={{ color: "#818cf8" }}>
-            Sign Up
+          <Link to="/SignUp" style={{ color: "#0071e3", fontWeight: 500 }}>
+            Create one
           </Link>
         </Typography>
       </Paper>

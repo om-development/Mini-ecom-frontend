@@ -42,17 +42,17 @@ export default function AddProduct() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>Add Product</Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Add a new product to your store
+    <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
+      <Typography variant="h3" sx={{ mb: 1 }}>Add Product</Typography>
+      <Typography variant="body1" sx={{ color: "text.secondary", mb: 4 }}>
+        Add a new item to your store
       </Typography>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-      <Paper sx={{ p: 4 }}>
+      <Paper sx={{ p: { xs: 3, md: 4 } }}>
         <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12 }}>
               <TextField fullWidth label="Product Title" name="title" value={form.title} onChange={handleChange} required />
             </Grid>
@@ -69,7 +69,7 @@ export default function AddProduct() {
               <TextField fullWidth label="Category" name="category" value={form.category} onChange={handleChange} required placeholder="e.g. Electronics" />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField fullWidth label="Image URL" name="image" value={form.image} onChange={handleChange} required placeholder="https://example.com/image.jpg" />
+              <TextField fullWidth label="Image URL" name="image" value={form.image} onChange={handleChange} required placeholder="https://..." />
             </Grid>
           </Grid>
           <Button
@@ -78,8 +78,8 @@ export default function AddProduct() {
             type="submit"
             size="large"
             disabled={submitting}
-            startIcon={submitting ? <CircularProgress size={20} /> : null}
-            sx={{ mt: 3 }}
+            startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{ mt: 4 }}
           >
             {submitting ? "Adding..." : "Add Product"}
           </Button>

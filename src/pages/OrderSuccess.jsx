@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Divider from "@mui/material/Divider";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 
 export default function OrderSuccess() {
   const { orderId } = useParams();
@@ -35,14 +35,14 @@ export default function OrderSuccess() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-        <CircularProgress />
+        <CircularProgress size={24} />
       </Box>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
         <Alert severity="error">{error}</Alert>
       </Container>
     );
@@ -51,61 +51,52 @@ export default function OrderSuccess() {
   if (!order) return null;
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box textAlign="center" sx={{ mb: 4 }}>
-        <CheckCircleIcon color="success" sx={{ fontSize: 64 }} />
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Order Placed Successfully!
+    <Container maxWidth="md" sx={{ py: { xs: 4, md: 8 } }}>
+      <Box textAlign="center" sx={{ mb: 6 }}>
+        <CheckCircleOutlinedIcon sx={{ fontSize: 56, color: "success.main", mb: 2 }} />
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Order Confirmed
         </Typography>
-        <Typography color="text.secondary">
-          Order ID: {order._id}
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          Order #{order._id?.slice(-8).toUpperCase()}
         </Typography>
       </Box>
 
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>Order Details</Typography>
-        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography color="text.secondary">Status</Typography>
-          <Alert severity={order.status === "Delivered" ? "success" : order.status === "Shipped" ? "info" : "warning"} sx={{ py: 0 }}>
-            {order.status}
-          </Alert>
+      <Paper sx={{ p: { xs: 3, md: 4 }, mb: 2.5 }}>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Status</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>{order.status}</Typography>
         </Box>
-        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography color="text.secondary">Payment</Typography>
-          <Typography>{order.paymentMethod?.toUpperCase()}</Typography>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Payment</Typography>
+          <Typography variant="body2">{order.paymentMethod?.toUpperCase()}</Typography>
         </Box>
-        <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography color="text.secondary">Date</Typography>
-          <Typography>{new Date(order.createdAt).toLocaleDateString()}</Typography>
+        <Box display="flex" justifyContent="space-between" sx={{ mb: 1.5 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>Date</Typography>
+          <Typography variant="body2">{new Date(order.createdAt).toLocaleDateString()}</Typography>
         </Box>
-
         <Divider sx={{ my: 2 }} />
-
-        <Typography variant="h6" gutterBottom>Items</Typography>
         {order.items?.map((item, i) => (
-          <Box key={i} display="flex" justifyContent="space-between" sx={{ py: 0.5 }}>
-            <Typography variant="body2">
+          <Box key={i} display="flex" justifyContent="space-between" sx={{ py: 0.75 }}>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {item.title || "Product"} x {item.quantity}
             </Typography>
             <Typography variant="body2">${(item.price * item.quantity).toFixed(2)}</Typography>
           </Box>
         ))}
-
         <Divider sx={{ my: 2 }} />
-
         <Box display="flex" justifyContent="space-between">
-          <Typography variant="h6" color="primary">Total</Typography>
-          <Typography variant="h6" color="primary">${order.totalAmount?.toFixed(2)}</Typography>
+          <Typography sx={{ fontWeight: 500 }}>Total</Typography>
+          <Typography sx={{ fontWeight: 600 }}>${order.totalAmount?.toFixed(2)}</Typography>
         </Box>
       </Paper>
 
       {order.address && (
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>Delivery Address</Typography>
-          <Typography>{order.address.fullName}</Typography>
-          <Typography variant="body2" color="text.secondary">{order.address.addressLine}</Typography>
-          <Typography variant="body2" color="text.secondary">{order.address.district}, {order.address.province} {order.address.pincode}</Typography>
-          <Typography variant="body2" color="text.secondary">Phone: {order.address.phone}</Typography>
+        <Paper sx={{ p: { xs: 3, md: 4 }, mb: 2.5 }}>
+          <Typography variant="h6" sx={{ mb: 1.5 }}>Delivery Address</Typography>
+          <Typography sx={{ fontWeight: 500 }}>{order.address.fullName}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>{order.address.addressLine}</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>{order.address.district}, {order.address.province} {order.address.pincode}</Typography>
         </Paper>
       )}
 
