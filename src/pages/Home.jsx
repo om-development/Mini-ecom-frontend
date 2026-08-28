@@ -5,19 +5,24 @@ import { useAuth } from "../context/AuthContext";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Pagination from "@mui/material/Pagination";
 import Snackbar from "@mui/material/Snackbar";
 import InputAdornment from "@mui/material/InputAdornment";
+import Stack from "@mui/material/Stack";
 import SearchIcon from "@mui/icons-material/Search";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 
 const ITEMS_PER_PAGE = 8;
+const MAX_VISIBLE_CATEGORIES = 4;
 
 const Home = () => {
   const { user } = useAuth();
@@ -28,6 +33,7 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
   const [imgErrors, setImgErrors] = useState({});
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
@@ -105,6 +111,11 @@ const Home = () => {
   const paginatedProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
   const featuredProducts = paginatedProducts.slice(0, 2);
   const gridProducts = paginatedProducts.slice(2);
+
+  const visibleCategories = showAllCategories
+    ? categories
+    : categories.slice(0, MAX_VISIBLE_CATEGORIES);
+  const hasMoreCategories = categories.length > MAX_VISIBLE_CATEGORIES;
 
   const ImageFallback = () => (
     <Box
@@ -228,19 +239,19 @@ const Home = () => {
                   display: "flex",
                   alignItems: "center",
                   gap: 0.5,
-                  backgroundColor: "#fff",
-                  color: "#000",
+                  backgroundColor: "#0071e3",
+                  color: "#fff",
                   borderRadius: 980,
                   px: 2,
                   py: 0.75,
                   fontSize: "0.875rem",
                   fontWeight: 500,
                   cursor: "pointer",
-                  "&:hover": { backgroundColor: "#f0f0f0" },
+                  "&:hover": { backgroundColor: "#0056b3" },
                 }}
               >
                 <AddShoppingCartIcon sx={{ fontSize: 16 }} />
-                Add
+                Add to Cart
               </Box>
             </Box>
             {product.stock === 0 && (
@@ -347,23 +358,13 @@ const Home = () => {
           >
             {product.title}
           </Typography>
-          <Typography
-            sx={{
-              color: "#0071e3",
-              fontWeight: 600,
-              fontSize: "1.25rem",
-              mb: 1,
-            }}
-          >
-            ${product.price.toFixed(2)}
-          </Typography>
           {product.description && (
             <Typography
               sx={{
                 color: "#6e6e73",
                 fontSize: "0.8125rem",
                 lineHeight: 1.5,
-                mb: 2,
+                mb: 1,
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
@@ -373,6 +374,16 @@ const Home = () => {
               {product.description}
             </Typography>
           )}
+          <Typography
+            sx={{
+              color: "#0071e3",
+              fontWeight: 600,
+              fontSize: "1.25rem",
+              mb: 2,
+            }}
+          >
+            ${product.price.toFixed(2)}
+          </Typography>
           <Button
             fullWidth
             variant="contained"
@@ -416,8 +427,16 @@ const Home = () => {
             Everything you need, curated for you.
           </Typography>
 
-          {/* Search + Filters */}
-          <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap", alignItems: "center" }}>
+          {/* Search + Filters — stacks vertically on mobile */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mb: 4,
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: { xs: "stretch", md: "center" },
+            }}
+          >
             <TextField
               placeholder="Search..."
               value={search}
@@ -432,28 +451,77 @@ const Home = () => {
                   ),
                 },
               }}
-              sx={{ flex: 1, maxWidth: 320 }}
+              sx={{ width: { xs: "100%", md: 320 } }}
             />
-            <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
-              <Chip
-                label="All"
-                clickable
-                size="small"
-                color={category === "All Categories" || !category ? "primary" : "default"}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 0.75,
+                flexWrap: { xs: "nowrap", md: "wrap" },
+                overflowX: { xs: "auto", md: "visible" },
+                pb: { xs: 0.5, md: 0 },
+                flexShrink: 0,
+              }}
+            >
+              <Button
                 onClick={() => handleCategory("All Categories")}
-                variant={category === "All Categories" || !category ? "filled" : "outlined"}
-              />
-              {categories.map((cat) => (
-                <Chip
+                variant={category === "All Categories" || !category ? "contained" : "outlined"}
+                sx={{
+                  borderRadius: 980,
+                  textTransform: "none",
+                  fontSize: "0.8125rem",
+                  borderColor: category === "All Categories" || !category ? "transparent" : "rgba(255,255,255,0.2)",
+                  color: category === "All Categories" || !category ? "#fff" : "#ededed",
+                  whiteSpace: "nowrap",
+                  "&:hover": {
+                    borderColor: "rgba(255,255,255,0.4)",
+                    backgroundColor: (category === "All Categories" || !category) ? "#0056b3" : "transparent",
+                  },
+                }}
+              >
+                All
+              </Button>
+              {visibleCategories.map((cat) => (
+                <Button
                   key={cat}
-                  label={cat}
-                  clickable
-                  size="small"
-                  color={category === cat ? "primary" : "default"}
                   onClick={() => handleCategory(cat)}
-                  variant={category === cat ? "filled" : "outlined"}
-                />
+                  variant={category === cat ? "contained" : "outlined"}
+                  sx={{
+                    borderRadius: 980,
+                    textTransform: "none",
+                    fontSize: "0.8125rem",
+                    borderColor: category === cat ? "transparent" : "rgba(255,255,255,0.2)",
+                    color: category === cat ? "#fff" : "#ededed",
+                    whiteSpace: "nowrap",
+                    "&:hover": {
+                      borderColor: "rgba(255,255,255,0.4)",
+                      backgroundColor: category === cat ? "#0056b3" : "transparent",
+                    },
+                  }}
+                >
+                  {cat}
+                </Button>
               ))}
+              {hasMoreCategories && (
+                <Button
+                  onClick={() => setShowAllCategories(true)}
+                  sx={{
+                    borderRadius: 980,
+                    textTransform: "none",
+                    fontSize: "0.8125rem",
+                    borderColor: "rgba(255,255,255,0.2)",
+                    color: "#ededed",
+                    whiteSpace: "nowrap",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    "&:hover": { borderColor: "rgba(255,255,255,0.4)" },
+                  }}
+                >
+                  +More
+                  <KeyboardArrowDownIcon sx={{ fontSize: 16 }} />
+                </Button>
+              )}
             </Box>
           </Box>
         </Container>
@@ -495,7 +563,7 @@ const Home = () => {
                   sx={{
                     display: "grid",
                     gridTemplateColumns: {
-                      xs: "repeat(2, 1fr)",
+                      xs: "1fr",
                       sm: "repeat(2, 1fr)",
                       md: "repeat(3, 1fr)",
                     },
@@ -523,6 +591,82 @@ const Home = () => {
           )}
         </Container>
       </Box>
+
+      {/* Category Drawer — bottom sheet */}
+      {showAllCategories && (
+        <Box
+          onClick={() => setShowAllCategories(false)}
+          sx={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "flex-end",
+            zIndex: 1300,
+          }}
+        >
+          <Box
+            onClick={(e) => e.stopPropagation()}
+            sx={{
+              width: "100%",
+              backgroundColor: "#0a0a0a",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "16px 16px 0 0",
+              p: 3,
+              maxHeight: "60vh",
+              overflowY: "auto",
+            }}
+          >
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+              <Typography sx={{ fontWeight: 600, fontSize: "1.125rem" }}>Categories</Typography>
+              <IconButton onClick={() => setShowAllCategories(false)} sx={{ color: "#6e6e73" }}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Stack spacing={1}>
+              <Box
+                onClick={() => { handleCategory("All Categories"); setShowAllCategories(false); }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  p: "12px 16px",
+                  borderRadius: "12px",
+                  backgroundColor: (category === "All Categories" || !category) ? "rgba(0,113,227,0.1)" : "transparent",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  cursor: "pointer",
+                  transition: "all 150ms ease",
+                  "&:hover": { backgroundColor: "rgba(0,113,227,0.05)", borderColor: "rgba(255,255,255,0.16)" },
+                }}
+              >
+                <Typography sx={{ color: "#ededed" }}>All</Typography>
+                {(category === "All Categories" || !category) && <CheckIcon sx={{ color: "#0071e3" }} />}
+              </Box>
+              {categories.map((cat) => (
+                <Box
+                  key={cat}
+                  onClick={() => { handleCategory(cat); setShowAllCategories(false); }}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: "12px 16px",
+                    borderRadius: "12px",
+                    backgroundColor: category === cat ? "rgba(0,113,227,0.1)" : "transparent",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    cursor: "pointer",
+                    transition: "all 150ms ease",
+                    "&:hover": { backgroundColor: "rgba(0,113,227,0.05)", borderColor: "rgba(255,255,255,0.16)" },
+                  }}
+                >
+                  <Typography sx={{ color: "#ededed" }}>{cat}</Typography>
+                  {category === cat && <CheckIcon sx={{ color: "#0071e3" }} />}
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        </Box>
+      )}
 
       <Snackbar
         open={toast.open}
