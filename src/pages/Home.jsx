@@ -693,7 +693,16 @@ const Home = () => {
             <>
               {cardMode === "compact" ? (
                 /* Compact mode — flat list, no hero */
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      md: "repeat(2, 1fr)",
+                    },
+                    gap: 1.5,
+                  }}
+                >
                   {products.map((product) => (
                     <CompactCard key={product._id} product={product} />
                   ))}
