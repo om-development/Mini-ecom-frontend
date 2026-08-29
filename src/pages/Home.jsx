@@ -20,6 +20,8 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import GridViewIcon from "@mui/icons-material/GridView";
+import ViewHeadlineIcon from "@mui/icons-material/ViewHeadline";
 import PagePagination from "../components/PagePagination";
 
 const MAX_VISIBLE_CATEGORIES = 3;
@@ -35,6 +37,7 @@ const Home = () => {
   const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
   const [imgErrors, setImgErrors] = useState({});
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [cardMode, setCardMode] = useState(() => localStorage.getItem("cardMode") || "normal");
 
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
@@ -401,6 +404,99 @@ const Home = () => {
     </Link>
   );
 
+  // Compact card — small landscape card for compact mode
+  const CompactCard = ({ product }) => (
+    <Link
+      to={`/product/${product._id}`}
+      style={{ textDecoration: "none", display: "block" }}
+    >
+      <Box
+        sx={{
+          backgroundColor: "#0a0a0a",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "12px",
+          overflow: "hidden",
+          cursor: "pointer",
+          transition: "all 150ms ease",
+          "&:hover": {
+            transform: "translateY(-2px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            borderColor: "rgba(255,255,255,0.16)",
+          },
+        }}
+      >
+        <Box sx={{ position: "relative", aspectRatio: "4 / 3", overflow: "hidden" }}>
+          {imgErrors[product._id] ? (
+            <ImageFallback />
+          ) : (
+            <Box
+              component="img"
+              src={product.image}
+              alt={product.title}
+              onError={() => handleImgError(product._id)}
+              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          )}
+          {product.stock === 0 && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                px: 1,
+                py: 0.15,
+                borderRadius: 980,
+                backgroundColor: "rgba(239,68,68,0.9)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <Typography sx={{ color: "#fff", fontSize: "0.6rem", fontWeight: 500, textTransform: "uppercase" }}>
+                Out of stock
+              </Typography>
+            </Box>
+          )}
+        </Box>
+        <Box sx={{ p: 1.25 }}>
+          <Typography
+            sx={{
+              color: "#ededed",
+              fontWeight: 500,
+              fontSize: "0.875rem",
+              lineHeight: 1.3,
+              mb: 0.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {product.title}
+          </Typography>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Typography
+              sx={{ color: "#0071e3", fontWeight: 600, fontSize: "0.875rem" }}
+            >
+              Rs {product.price.toFixed(2)}
+            </Typography>
+            <IconButton
+              size="small"
+              disabled={product.stock === 0}
+              onClick={(e) => addToCart(e, product._id)}
+              sx={{
+                color: "#0071e3",
+                backgroundColor: "rgba(0,113,227,0.1)",
+                "&:hover": { backgroundColor: "rgba(0,113,227,0.2)" },
+                "&.Mui-disabled": { color: "#48484a", backgroundColor: "rgba(255,255,255,0.05)" },
+              }}
+            >
+              <AddShoppingCartIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Box>
+        </Box>
+      </Box>
+    </Link>
+  );
+
   return (
     <Box sx={{ minHeight: "100vh" }}>
       {/* Hero Section */}
@@ -432,28 +528,53 @@ const Home = () => {
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: 1.5,
               mb: 4,
               flexDirection: { xs: "column", md: "row" },
               alignItems: { xs: "stretch", md: "center" },
             }}
           >
-            <TextField
-              placeholder="Search..."
-              value={search}
-              onChange={handleSearch}
-              size="small"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: "#6e6e73", fontSize: 18 }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{ width: { xs: "100%", md: 320 } }}
-            />
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center", width: { xs: "100%", md: "auto" } }}>
+              <TextField
+                placeholder="Search..."
+                value={search}
+                onChange={handleSearch}
+                size="small"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: "#6e6e73", fontSize: 18 }} />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{ flex: 1, minWidth: 0 }}
+              />
+              <IconButton
+                onClick={() => {
+                  const next = cardMode === "normal" ? "compact" : "normal";
+                  setCardMode(next);
+                  localStorage.setItem("cardMode", next);
+                }}
+                sx={{
+                  color: "#ededed",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: "10px",
+                  width: 36,
+                  height: 36,
+                  flexShrink: 0,
+                  "&:hover": { borderColor: "rgba(255,255,255,0.4)", backgroundColor: "rgba(255,255,255,0.05)" },
+                }}
+                title={cardMode === "normal" ? "Compact view" : "Normal view"}
+              >
+                {cardMode === "normal" ? (
+                  <ViewHeadlineIcon sx={{ fontSize: 20 }} />
+                ) : (
+                  <GridViewIcon sx={{ fontSize: 20 }} />
+                )}
+              </IconButton>
+            </Box>
             <Box
               sx={{
                 display: "flex",
@@ -545,32 +666,51 @@ const Home = () => {
             </Box>
           ) : (
             <>
-              {/* Featured: First 2 products as hero cards */}
-              {featuredProducts.length > 0 && (
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 6 }}>
-                  {featuredProducts.map((product) => (
-                    <HeroCard key={product._id} product={product} />
-                  ))}
-                </Box>
-              )}
-
-              {/* Grid: Remaining products */}
-              {gridProducts.length > 0 && (
+              {cardMode === "compact" ? (
+                /* Compact mode — flat grid, no hero */
                 <Box
                   sx={{
                     display: "grid",
                     gridTemplateColumns: {
-                      xs: "1fr",
-                      sm: "repeat(2, 1fr)",
-                      md: "repeat(3, 1fr)",
+                      xs: "repeat(2, 1fr)",
+                      sm: "repeat(3, 1fr)",
+                      md: "repeat(4, 1fr)",
                     },
-                    gap: 2,
+                    gap: 1.5,
                   }}
                 >
-                  {gridProducts.map((product) => (
-                    <GridCard key={product._id} product={product} />
+                  {products.map((product) => (
+                    <CompactCard key={product._id} product={product} />
                   ))}
                 </Box>
+              ) : (
+                /* Normal mode — hero + grid */
+                <>
+                  {featuredProducts.length > 0 && (
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 6 }}>
+                      {featuredProducts.map((product) => (
+                        <HeroCard key={product._id} product={product} />
+                      ))}
+                    </Box>
+                  )}
+                  {gridProducts.length > 0 && (
+                    <Box
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: {
+                          xs: "repeat(2, 1fr)",
+                          sm: "repeat(2, 1fr)",
+                          md: "repeat(3, 1fr)",
+                        },
+                        gap: 2,
+                      }}
+                    >
+                      {gridProducts.map((product) => (
+                        <GridCard key={product._id} product={product} />
+                      ))}
+                    </Box>
+                  )}
+                </>
               )}
 
               {totalPages > 1 && (
