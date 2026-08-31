@@ -1,17 +1,53 @@
-# React + Vite
+# Mini Ecom 🛒
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Mini Ecom is a full-stack e-commerce website I built using the MERN stack.
 
-Currently, two official plugins are available:
+The project started as a simple e-commerce MVP and grew into a complete application with authentication, product management, cart, addresses, checkout, and orders.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it has
 
-## React Compiler
+- User signup and login
+- JWT authentication using HTTP-only cookies
+- User and admin roles
+- Product browsing and product details
+- Search and category filtering
+- Admin product CRUD
+- Shopping cart
+- Address management
+- Checkout and orders
+- Responsive design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech I used
 
-## Expanding the ESLint configuration
+### Frontend
+- React
+- React Router
+- Tailwind CSS
+- Material UI (MUI)
+- Axios
+- Vite
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# Mini-ecom-frontend
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
+- cookie-parser
+
+## Live Project
+
+[View the live website](https://mini-ecom-frontend-nine.vercel.app/)
+
+## GitHub
+
+[Frontend](https://github.com/om-development/Mini-ecom-frontend)
+
+[Backend](https://github.com/om-development/Mini-ecom-backend)
+
+## About
+
+This project was built as a way for me to put my frontend and backend knowledge together and build something closer to a real-world application rather than just another tutorial project.
+
+**Built by Om Dhakal**
